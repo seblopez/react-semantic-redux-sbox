@@ -1,6 +1,3 @@
-export const required = value =>
-    value ? undefined : 'Value is required';
-
 export const minLength = value =>
     value.length < 4
         ? 'Value must be at least 4 characters'
@@ -11,6 +8,8 @@ export const maxLength = value =>
 
 export const validate = formValues => {
     const errors = {};
+
+    console.log('Validating form values ', formValues);
 
     if(!formValues.name) {
         errors.name = 'You must enter a name for the Vendor';

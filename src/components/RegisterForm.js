@@ -60,12 +60,9 @@ class RegisterForm extends Component {
         )
     };
 
-
     renderDropdown = ({ name, label, required, placeholder, options, meta, input }) => {
-        const className = `${required ? 'required': ''} field ${meta.error && meta.touched && required ? 'error' : ''}`;
         return (
             <Form.Dropdown
-                className={className}
                 clearable
                 label={label}
                 name={name}
@@ -82,11 +79,11 @@ class RegisterForm extends Component {
         );
     }
 
-    render() {
-        const { handleSubmit } = this.props;
+    onSubmit = formValues => this.props.onSubmit(formValues);
 
+    render() {
         return (
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={this.onSubmit}>
                 <Grid>
                     <Grid.Column width={4}>
                         <Field
@@ -109,7 +106,7 @@ class RegisterForm extends Component {
                     </Grid.Column>
                 </Grid>
                 <Grid>
-                    <Grid.Column>
+                    <Grid.Column width={9}>
                         {tabs(this.props)}
                     </Grid.Column>
                 </Grid>
@@ -135,8 +132,7 @@ const mapDispatchToProps = {
 
 RegisterForm = reduxForm({
     form: "register",
-    validate,
-    asyncBlurFields: ["username"]
+    validate
 })(RegisterForm);
 
 const selector = formValueSelector('register');

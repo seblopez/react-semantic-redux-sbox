@@ -9,8 +9,6 @@ const roleOptions = [
 ];
 
 const renderHeaderCheckBox = ({input, fields, dispatcher}) => {
-    console.log('Check box props ', dispatcher);
-    console.log('Update check boxes ', dispatcher.updateCheckBoxes);
     return(
         <Form.Checkbox
             onChange={(e, {checked}) => {
