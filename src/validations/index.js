@@ -9,8 +9,19 @@ export const minLength = value =>
 export const maxLength = value =>
     value.length > 10 ? 'Value is too long' : undefined;
 
-export const matchesPassword = (value, allValues) =>
-    value === allValues.password ? undefined : 'Passwords must match';
+export const validate = formValues => {
+    const errors = {};
+
+    if(!formValues.name) {
+        errors.name = 'You must enter a name for the Vendor';
+    }
+
+    if(formValues.specialties && formValues.specialties.length === 0) {
+        errors.specialties = 'You must enter at least a Specialty';
+    }
+
+    return errors;
+}
 
 export const asyncValidate = values => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));

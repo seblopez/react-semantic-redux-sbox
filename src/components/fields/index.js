@@ -1,65 +1,21 @@
 import React from "react";
-import cx from "classnames";
-import { connect } from 'react-redux';
-import { Field, formValueSelector} from "redux-form";
 import {Form, Button, Table, Grid} from "semantic-ui-react";
-import RegisterForm from "../RegisterForm";
+import { Field } from "redux-form";
 
-const getValidityClassName = meta => {
-    if (meta.asyncValidating) {
-        return "async-validating";
-    }
-    if (meta.active) {
-        return;
-    }
-    if (meta.touched && meta.invalid) {
-        return "invalid";
-    }
-    if (meta.touched && meta.valid) {
-        return "valid";
-    }
-};
-
-export const customInput = props => {
-    const { label, input, type, meta } = props;
-    return (
-        <div
-            className={cx(
-                "custom-input-container",
-                { "flex-row-reverse": type === "checkbox" },
-                { dirty: meta.dirty || meta.initial },
-                getValidityClassName(meta)
-            )}
-        >
-            <input {...input} type={type} autoFocus={props.autoFocus} />
-            <label>{label}</label>
-            {meta.error &&
-            meta.touched &&
-            !meta.active && (
-                <div className="feedback-text error-text">{meta.error}</div>
-            )}
-        </div>
-    );
-};
-
-export const customSelect = props => {
-    return (
-        <div className="custom-select-container">
-            <label>{props.label}</label>
-            <select {...props.input}>
-                <option value="tabs">Tabs</option>
-                <option value="spaces">Spaces</option>
-            </select>
-        </div>
-    );
-};
+const roleOptions = [
+    { key: 'ow', value: 'ow', text: 'Owner' },
+    { key: 'tc', value: 'tc', text: 'Technician' },
+    { key: 'sc', value: 'sc', text: 'Secretary' }
+];
 
 const renderHeaderCheckBox = ({input, fields, dispatcher}) => {
+    console.log('Check box props ', dispatcher);
+    console.log('Update check boxes ', dispatcher.updateCheckBoxes);
     return(
         <Form.Checkbox
             onChange={(e, {checked}) => {
                 input.onChange(checked);
-                fields.map(field => dispatcher.updateCheckBoxes('register',`${field}.selected`, checked));
+                fields.map(field => dispatcher.updateCheckBoxes(dispatcher.form,`${field}.selected`, checked));
             }}
         />
     )
@@ -68,24 +24,36 @@ const renderHeaderCheckBox = ({input, fields, dispatcher}) => {
 const renderRowCheckBox = ({input}) => {
     return(
         <Form.Checkbox
-            checked={input.value ? true : false}
+            checked={!!input.value}
             onChange={(e, { checked }) => input.onChange(checked)}
         />
     )
 
 }
 
+const renderRoles = ({input}) => {
+    return(
+        <Form.Dropdown
+            placeholder='Select a Role...'
+            search
+            selection
+            options={roleOptions}
+            value={input.value}
+            onChange={(e, {value}) => {
+                input.onChange(value)}}
+        />
+    )
+}
+
 export const contacts = ({ fields, dispatchers }) => {
+    const props = dispatchers.props;
+
     const addRows = () => {
-        dispatchers.pushArray("register", "contacts", "");
+        props.pushArray(props.form, 'contacts', '');
     };
 
     const removeSelectedRows = () => {
-        fields.map((field, index) => {
-            const selector = formValueSelector('register');
-            console.log('Field ', field);
-            console.log('Selector ', selector);
-        });
+        props.updateContacts(props.form, 'contacts', props.contacts.filter(row => !row.selected))
     };
 
     return (
@@ -114,7 +82,7 @@ export const contacts = ({ fields, dispatchers }) => {
                                 name='rowSelector'
                                 component={renderHeaderCheckBox}
                                 fields={fields}
-                                dispatcher={dispatchers}
+                                dispatcher={props}
                             />
                         </Table.HeaderCell>
                         <Table.HeaderCell>
@@ -122,6 +90,9 @@ export const contacts = ({ fields, dispatchers }) => {
                         </Table.HeaderCell>
                         <Table.HeaderCell>
                             Last Name
+                        </Table.HeaderCell>
+                        <Table.HeaderCell>
+                            Role
                         </Table.HeaderCell>
                         <Table.HeaderCell />
                     </Table.Row>
@@ -149,6 +120,13 @@ export const contacts = ({ fields, dispatchers }) => {
                                         key={`lastName${index}`}
                                         name={`${contact}.lastName`}
                                         component={Form.Input}
+                                    />
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Field
+                                        key={`role${index}`}
+                                        name={`${contact}.role`}
+                                        component={renderRoles}
                                     />
                                 </Table.Cell>
                                 <Table.Cell collapsing textAlign='center'>

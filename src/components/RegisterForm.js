@@ -1,21 +1,85 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import {FieldArray, reduxForm, arrayPush, change, formValueSelector, arrayRemove} from "redux-form";
+import {Field, FieldArray, reduxForm, arrayPush, change, formValueSelector} from "redux-form";
 import { contacts } from "./fields";
-import { Form, Button, Grid } from "semantic-ui-react";
+import { Form, Grid, Button, Tab } from "semantic-ui-react";
 import {
-    required,
-    minLength,
-    maxLength,
-    matchesPassword,
-    asyncValidate
+    validate
 } from "../validations";
 import "./RegisterForm.css";
 import "./styled";
+import errorRenderer from "./errorRenderer";
+
+const specialtyOptions = [
+    { key: 'gas', text: 'Gas', value: '1233d3dde' },
+    { key: 'electricity', text: 'Electricity', value: '1233d3dda' },
+    { key: 'plumbing', text: 'Plumbing', value: '1232d3eda' },
+    { key: 'painting', text: 'Painting', value: '14321e3sd' }
+];
+
+const panes = (props) => [
+    { menuItem: { key: 'users', icon: 'users', content: 'Contacts' }, render: () => <Tab.Pane><Contacts props={props}/></Tab.Pane>},
+    { menuItem: { key: 'location', icon: 'location arrow', content: 'Location' }, render: () => <Tab.Pane>Tab 2 Content</Tab.Pane>}
+];
+
+const Contacts = (props) => {
+    console.log('Contact Props ', props);
+    return (
+        <Grid>
+            <Grid.Column>
+                <FieldArray name="contacts" component={contacts} dispatchers={props} />
+            </Grid.Column>
+        </Grid>);
+}
+
+const tabs = (props) => <Tab panes={ panes(props) } />;
 
 class RegisterForm extends Component {
-    componentWillMount() {
-        this.props.initialize({ contacts: [{firstName: 'Jonas', lastName: 'Kahnwald' }, {firstName: 'Martha', lastName: 'Nielsen'}] });
+    componentDidMount() {
+        this.props.initialize({
+            name: 'Ovelar Hnos.',
+            specialties: [ '1233d3dde', '1232d3eda'],
+            contacts: [
+                { firstName: 'Jonas', lastName: 'Kahnwald', role: 'ow' },
+                { firstName: 'Martha', lastName: 'Nielsen', role: 'tc' }
+                ]
+        });
+    }
+
+    renderInput = ({ name, label, required, placeholder, meta, input }) => {
+        return(
+            <Form.Input
+                name={name}
+                label={label}
+                required={required}
+                placeholder={placeholder}
+                value={input.value}
+                onChange={(e, {value}) => input.onChange(value)}
+                error={errorRenderer(meta, required)}
+            />
+        )
+    };
+
+
+    renderDropdown = ({ name, label, required, placeholder, options, meta, input }) => {
+        const className = `${required ? 'required': ''} field ${meta.error && meta.touched && required ? 'error' : ''}`;
+        return (
+            <Form.Dropdown
+                className={className}
+                clearable
+                label={label}
+                name={name}
+                search
+                fluid
+                multiple
+                selection
+                onChange={(e, { value }) => input.onChange(value)}
+                options={options}
+                placeholder={placeholder}
+                value={input.value || []}
+                error={errorRenderer(meta, required)}
+            />
+        );
     }
 
     render() {
@@ -23,7 +87,40 @@ class RegisterForm extends Component {
 
         return (
             <Form onSubmit={handleSubmit}>
-                <FieldArray name="contacts" component={contacts} dispatchers={this.props} />
+                <Grid>
+                    <Grid.Column width={4}>
+                        <Field
+                            name="name"
+                            component={this.renderInput}
+                            label="Name"
+                            placeholder="Select a Vendor name..."
+                            required={true}
+                        />
+                    </Grid.Column>
+                    <Grid.Column width={4}>
+                        <Field
+                            name="specialties"
+                            label="Specialties"
+                            component={this.renderDropdown}
+                            required={true}
+                            placeholder="Select the Vendor's specialties..."
+                            options={specialtyOptions}
+                        />
+                    </Grid.Column>
+                </Grid>
+                <Grid>
+                    <Grid.Column>
+                        {tabs(this.props)}
+                    </Grid.Column>
+                </Grid>
+                <Grid>
+                    <Grid.Column>
+                        <Button primary>
+                            Submit
+                        </Button>
+                    </Grid.Column>
+                </Grid>
+
             </Form>
         );
     }
@@ -33,13 +130,20 @@ const mapDispatchToProps = {
     // NOTE: This MUST be aliased or it will not work
     pushArray: arrayPush,
     updateCheckBoxes: change,
-    removeRow: arrayRemove
+    updateContacts: change
 };
 
 RegisterForm = reduxForm({
     form: "register",
-    asyncValidate,
+    validate,
     asyncBlurFields: ["username"]
+})(RegisterForm);
+
+const selector = formValueSelector('register');
+
+RegisterForm = connect(state => {
+    const contacts = selector(state, 'contacts');
+    return { contacts };
 })(RegisterForm);
 
 export default connect(
