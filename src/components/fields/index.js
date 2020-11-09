@@ -1,6 +1,7 @@
 import React from "react";
 import {Form, Button, Table, Grid} from "semantic-ui-react";
 import { Field } from "redux-form";
+import {errorRenderer, rowErrorRenderer} from "../errors";
 
 const roleOptions = [
     { key: 'ow', value: 'ow', text: 'Owner' },
@@ -41,6 +42,17 @@ const renderRoles = ({input}) => {
                 input.onChange(value)}}
         />
     )
+};
+
+const renderInput = ({input, name, key, meta, required}) => {
+    return(
+        <Form.Input
+            {...input}
+            key={key}
+            name={name}
+            required={required}
+            error={errorRenderer(meta, required)}
+        />);
 }
 
 export const contacts = ({ fields, dispatchers }) => {
@@ -98,7 +110,7 @@ export const contacts = ({ fields, dispatchers }) => {
                 <Table.Body>
                     {fields.map((contact, index) => {
                         return(
-                            <Table.Row key={index} >
+                            <Table.Row key={index}>
                                 <Table.Cell collapsing textAlign='center'>
                                     <Field
                                         key={`${contact}.selected`}
@@ -110,14 +122,16 @@ export const contacts = ({ fields, dispatchers }) => {
                                     <Field
                                         key={`firstName${index}`}
                                         name={`${contact}.firstName`}
-                                        component={Form.Input}
+                                        component={renderInput}
+                                        required={true}
                                     />
                                 </Table.Cell>
                                 <Table.Cell>
                                     <Field
                                         key={`lastName${index}`}
                                         name={`${contact}.lastName`}
-                                        component={Form.Input}
+                                        component={renderInput}
+                                        required={true}
                                     />
                                 </Table.Cell>
                                 <Table.Cell>

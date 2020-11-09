@@ -1,3 +1,8 @@
+export const required = value => {
+    console.log('Required validation ', value);
+    return value ? undefined : 'Value is required';
+}
+
 export const minLength = value =>
     value.length < 4
         ? 'Value must be at least 4 characters'
@@ -9,8 +14,6 @@ export const maxLength = value =>
 export const validate = formValues => {
     const errors = {};
 
-    console.log('Validating form values ', formValues);
-
     if(!formValues.name) {
         errors.name = 'You must enter a name for the Vendor';
     }
@@ -18,6 +21,29 @@ export const validate = formValues => {
     if(formValues.specialties && formValues.specialties.length === 0) {
         errors.specialties = 'You must enter at least a Specialty';
     }
+
+    if(formValues && formValues.contacts) {
+
+        const contactArrayErrors = [];
+
+        formValues.contacts.forEach((contact, index) => {
+            if(!contact.firstName) {
+                contactArrayErrors[index] = {...contactArrayErrors[index], firstName: 'You must enter a first name'};
+            }
+            if(!contact.lastName) {
+                contactArrayErrors[index] = {...contactArrayErrors[index], lastName: 'You must enter a last name'};
+            }
+            if(!contact.role) {
+                contactArrayErrors[index] = {...contactArrayErrors[index], role: 'You must enter a role'};
+            }
+        });
+
+        if(contactArrayErrors.length) {
+            errors.contacts = contactArrayErrors;
+        }
+    }
+
+    console.log('Errors ', errors);
 
     return errors;
 }

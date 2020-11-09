@@ -8,7 +8,7 @@ import {
 } from "../validations";
 import "./RegisterForm.css";
 import "./styled";
-import errorRenderer from "./errorRenderer";
+import { errorRenderer } from "./errors";
 
 const specialtyOptions = [
     { key: 'gas', text: 'Gas', value: '1233d3dde' },
@@ -23,7 +23,7 @@ const panes = (props) => [
 ];
 
 const Contacts = (props) => {
-    console.log('Contact Props ', props);
+    // console.log('Contact Props ', props);
     return (
         <Grid>
             <Grid.Column>
@@ -74,6 +74,7 @@ class RegisterForm extends Component {
                 options={options}
                 placeholder={placeholder}
                 value={input.value || []}
+                required={required}
                 error={errorRenderer(meta, required)}
             />
         );
@@ -132,6 +133,7 @@ const mapDispatchToProps = {
 
 RegisterForm = reduxForm({
     form: "register",
+    touchOnChange: true,
     validate
 })(RegisterForm);
 
