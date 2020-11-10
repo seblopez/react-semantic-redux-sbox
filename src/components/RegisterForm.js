@@ -81,10 +81,7 @@ class RegisterForm extends Component {
         );
     }
 
-    onSubmit = values => {
-        console.log('Submitting...')
-        this.props.onSubmit(values);
-    }
+    onSubmit = values => this.props.handleSubmit(values);
 
     render() {
         return (

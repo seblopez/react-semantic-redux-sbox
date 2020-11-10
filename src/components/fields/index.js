@@ -2,6 +2,7 @@ import React from "react";
 import {Form, Button, Table, Grid, Message, Icon} from "semantic-ui-react";
 import { Field } from "redux-form";
 import { errorRenderer } from "../errors";
+import {required} from "../../validations";
 
 const roleOptions = [
     { key: 'ow', value: 'ow', text: 'Owner' },
@@ -31,24 +32,30 @@ const renderRowCheckBox = ({input, meta, required}) => {
 
 }
 
-const renderRoles = ({input}) => {
+const renderRoles = ({input, name, key, meta, placeholder, required, options}) => {
     return(
         <Form.Dropdown
-            placeholder='Select a Role...'
+            key={key}
+            name={name}
+            placeholder={placeholder}
             search
             selection
-            options={roleOptions}
+            fluid
+            options={options}
             value={input.value}
+            required={required}
             onChange={(e, {value}) => input.onChange(value)}
+            error={errorRenderer(meta, required)}
         />
     )
 };
 
-const renderInput = ({input, name, key, meta, required}) => {
+const renderInput = ({input, name, key, meta, placeholder, required}) => {
     return(
         <Form.Input
             key={key}
             name={name}
+            placeholder={placeholder}
             required={required}
             value={input.value}
             onChange={(e, {value}) => input.onChange(value)}
@@ -133,7 +140,7 @@ export const contacts = ({ fields, dispatchers }) => {
     return (
         <div>
             <AddRemoveButtons dispatcher={props}/>
-            <Table compact padded collapsing celled selectable unstackable striped>
+            <Table compact padded collapsing celled selectable stackable striped>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell collapsing textAlign='center'>
@@ -172,6 +179,7 @@ export const contacts = ({ fields, dispatchers }) => {
                                         key={`firstName${index}`}
                                         name={`${contact}.firstName`}
                                         component={renderInput}
+                                        placeholder={`Enter the contact's first name...`}
                                         required={true}
                                     />
                                 </Table.Cell>
@@ -179,6 +187,7 @@ export const contacts = ({ fields, dispatchers }) => {
                                     <Field
                                         key={`lastName${index}`}
                                         name={`${contact}.lastName`}
+                                        placeholder={`Enter the contact's last name...`}
                                         component={renderInput}
                                         required={true}
                                     />
@@ -188,6 +197,9 @@ export const contacts = ({ fields, dispatchers }) => {
                                         key={`role${index}`}
                                         name={`${contact}.role`}
                                         component={renderRoles}
+                                        required={true}
+                                        options={roleOptions}
+                                        placeholder='Select a role...'
                                     />
                                 </Table.Cell>
                                 <Table.Cell collapsing textAlign='center'>

@@ -43,8 +43,6 @@ export const validate = formValues => {
         }
     }
 
-    console.log('Errors ', errors);
-
     return errors;
 }
 
