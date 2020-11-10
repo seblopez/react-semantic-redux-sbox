@@ -1,7 +1,7 @@
 import React from "react";
-import {Form, Button, Table, Grid} from "semantic-ui-react";
+import {Form, Button, Table, Grid, Message, Icon} from "semantic-ui-react";
 import { Field } from "redux-form";
-import {errorRenderer, rowErrorRenderer} from "../errors";
+import { errorRenderer } from "../errors";
 
 const roleOptions = [
     { key: 'ow', value: 'ow', text: 'Owner' },
@@ -20,11 +20,12 @@ const renderHeaderCheckBox = ({input, fields, dispatcher}) => {
     )
 }
 
-const renderRowCheckBox = ({input}) => {
+const renderRowCheckBox = ({input, meta, required}) => {
     return(
         <Form.Checkbox
             checked={!!input.value}
             onChange={(e, { checked }) => input.onChange(checked)}
+            error={errorRenderer(meta, required)}
         />
     )
 
@@ -38,8 +39,7 @@ const renderRoles = ({input}) => {
             selection
             options={roleOptions}
             value={input.value}
-            onChange={(e, {value}) => {
-                input.onChange(value)}}
+            onChange={(e, {value}) => input.onChange(value)}
         />
     )
 };
@@ -47,27 +47,28 @@ const renderRoles = ({input}) => {
 const renderInput = ({input, name, key, meta, required}) => {
     return(
         <Form.Input
-            {...input}
             key={key}
             name={name}
             required={required}
+            value={input.value}
+            onChange={(e, {value}) => input.onChange(value)}
             error={errorRenderer(meta, required)}
         />);
 }
 
-export const contacts = ({ fields, dispatchers }) => {
-    const props = dispatchers.props;
-
-    const addRows = () => {
-        props.pushArray(props.form, 'contacts', '');
+const AddRemoveButtons = ({dispatcher}) => {
+    const addRows = e => {
+        e.preventDefault();
+        dispatcher.pushArray(dispatcher.form, 'contacts', '');
     };
 
-    const removeSelectedRows = () => {
-        props.updateContacts(props.form, 'contacts', props.contacts.filter(row => !row.selected))
+    const removeSelectedRows = e => {
+        e.preventDefault();
+        dispatcher.updateContacts(dispatcher.form, 'contacts', dispatcher.contacts.filter(row => !row.selected))
     };
 
-    return (
-        <div>
+    if(!dispatcher.contacts || !dispatcher.contacts.length) {
+        return (
             <Grid>
                 <Grid.Column>
                     <Button content='Add'
@@ -76,14 +77,62 @@ export const contacts = ({ fields, dispatchers }) => {
                             labelPosition='left'
                             onClick={addRows}
                     />
-                    <Button content='Remove'
-                            icon='delete user'
-                            negative
-                            labelPosition='left'
-                            onClick={removeSelectedRows}
-                    />
                 </Grid.Column>
             </Grid>
+        );
+    }
+
+    return(
+        <Grid>
+            <Grid.Column>
+                <Button content='Add'
+                        icon='add user'
+                        primary
+                        labelPosition='left'
+                        onClick={addRows}
+                />
+                <Button content='Remove'
+                        icon='delete user'
+                        negative
+                        labelPosition='left'
+                        onClick={removeSelectedRows}
+                />
+            </Grid.Column>
+        </Grid>
+    );
+}
+
+const BottomAddRemoveButtons = ({dispatcher}) => {
+    if(dispatcher.props.contacts && dispatcher.props.contacts.length > 5) {
+        return <AddRemoveButtons dispatcher={dispatcher.props}/>
+    } else {
+        return null;
+    }
+}
+
+export const contacts = ({ fields, dispatchers }) => {
+    const props = dispatchers.props;
+
+    if(!fields.length) {
+        return(
+            <div>
+                <Message info>
+                    <Message.Content>
+                        <Message.Header>
+                            Add your first contact to this vendor!
+                        </Message.Header>
+                        You currently don't have any contacts created, go ahead and add some!
+                    </Message.Content>
+                </Message>
+                <AddRemoveButtons dispatcher={props}/>
+            </div>
+
+        );
+    }
+
+    return (
+        <div>
+            <AddRemoveButtons dispatcher={props}/>
             <Table compact padded collapsing celled selectable unstackable striped>
                 <Table.Header>
                     <Table.Row>
@@ -154,6 +203,7 @@ export const contacts = ({ fields, dispatchers }) => {
                     )}
                 </Table.Body>
             </Table>
+            <BottomAddRemoveButtons dispatcher={dispatchers}/>
         </div>
     );
 };

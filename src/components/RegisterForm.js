@@ -17,13 +17,12 @@ const specialtyOptions = [
     { key: 'painting', text: 'Painting', value: '14321e3sd' }
 ];
 
-const panes = (props) => [
+const panes = props => [
     { menuItem: { key: 'users', icon: 'users', content: 'Contacts' }, render: () => <Tab.Pane><Contacts props={props}/></Tab.Pane>},
-    { menuItem: { key: 'location', icon: 'location arrow', content: 'Location' }, render: () => <Tab.Pane>Tab 2 Content</Tab.Pane>}
+    { menuItem: { key: 'location', icon: 'location arrow', content: 'Locations' }, render: () => <Tab.Pane>Tab 2 Content</Tab.Pane>}
 ];
 
-const Contacts = (props) => {
-    // console.log('Contact Props ', props);
+const Contacts = props => {
     return (
         <Grid>
             <Grid.Column>
@@ -32,10 +31,11 @@ const Contacts = (props) => {
         </Grid>);
 }
 
-const tabs = (props) => <Tab panes={ panes(props) } />;
+const tabs = props => <Tab panes={ panes(props) } />;
 
 class RegisterForm extends Component {
     componentDidMount() {
+        /*
         this.props.initialize({
             name: 'Ovelar Hnos.',
             specialties: [ '1233d3dde', '1232d3eda'],
@@ -44,6 +44,7 @@ class RegisterForm extends Component {
                 { firstName: 'Martha', lastName: 'Nielsen', role: 'tc' }
                 ]
         });
+        */
     }
 
     renderInput = ({ name, label, required, placeholder, meta, input }) => {
@@ -80,11 +81,14 @@ class RegisterForm extends Component {
         );
     }
 
-    onSubmit = formValues => this.props.onSubmit(formValues);
+    onSubmit = values => {
+        console.log('Submitting...')
+        this.props.onSubmit(values);
+    }
 
     render() {
         return (
-            <Form onSubmit={this.onSubmit}>
+            <Form onSubmit={this.onSubmit} noValidate>
                 <Grid>
                     <Grid.Column width={4}>
                         <Field
@@ -107,7 +111,7 @@ class RegisterForm extends Component {
                     </Grid.Column>
                 </Grid>
                 <Grid>
-                    <Grid.Column width={9}>
+                    <Grid.Column>
                         {tabs(this.props)}
                     </Grid.Column>
                 </Grid>
@@ -118,7 +122,6 @@ class RegisterForm extends Component {
                         </Button>
                     </Grid.Column>
                 </Grid>
-
             </Form>
         );
     }

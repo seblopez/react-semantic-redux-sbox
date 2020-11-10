@@ -18,7 +18,7 @@ export const validate = formValues => {
         errors.name = 'You must enter a name for the Vendor';
     }
 
-    if(formValues.specialties && formValues.specialties.length === 0) {
+    if(!formValues.specialties || !formValues.specialties.length) {
         errors.specialties = 'You must enter at least a Specialty';
     }
 
