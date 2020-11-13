@@ -64,11 +64,8 @@ const renderInput = ({input, name, key, meta, placeholder, required}) => {
 }
 
 
-const removeContactModal = dispatcher => {
-    dispatcher.dispatch({type: OPEN_MODAL, dimmer: 'blurring'});
-};
-
 const AddRemoveButtons = ({dispatcher}) => {
+
     const addRows = e => {
         e.preventDefault();
         dispatcher.pushArray(dispatcher.form, 'contacts', '');
@@ -76,7 +73,7 @@ const AddRemoveButtons = ({dispatcher}) => {
 
     const removeSelectedRows = e => {
         e.preventDefault();
-        removeContactModal(dispatcher);
+        dispatcher.dispatch({ type: OPEN_MODAL, dimmer: 'blurring' });
     };
 
     if(!dispatcher.contacts || !dispatcher.contacts.length) {
@@ -145,7 +142,7 @@ export const contacts = ({ fields, dispatchers }) => {
     return (
         <div>
             <AddRemoveButtons dispatcher={props}/>
-            <DeleteConfirmationModal dispatcher={props}/>
+            <DeleteConfirmationModal dispatcher={props} />
             <Table compact padded collapsing celled selectable stackable striped>
                 <Table.Header>
                     <Table.Row>
@@ -209,12 +206,15 @@ export const contacts = ({ fields, dispatchers }) => {
                                     />
                                 </Table.Cell>
                                 <Table.Cell collapsing textAlign='center'>
-                                    <Button icon='delete'
+                                    <Button icon='user delete'
                                             negative
                                             circular
                                             size='mini'
                                             name='delete'
-                                            onClick={() => fields.remove(index)} >
+                                            onClick={e => {
+                                                e.preventDefault();
+                                                props.dispatch({type: OPEN_MODAL, dimmer: 'blurring', index: index });
+                                            } } >
                                     </Button>
                                 </Table.Cell>
                             </Table.Row>);}
