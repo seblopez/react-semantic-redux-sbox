@@ -5,18 +5,15 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import { Provider } from 'react-redux';
-import { createStore, combineReducers } from 'redux';
-import { reducer as formReducer } from 'redux-form';
+import {applyMiddleware, createStore, compose} from 'redux';
+import reducers from "./reducers";
+import thunk from "redux-thunk";
 
-const reducers = {
-    form: formReducer
-};
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-const reducer = combineReducers(reducers);
 let store = createStore(
-    reducer,
-    window.__REDUX_DEVTOOLS_EXTENSION__ &&
-    window.__REDUX_DEVTOOLS_EXTENSION__()
+    reducers,
+    composeEnhancers(applyMiddleware(thunk))
 );
 
 ReactDOM.render(

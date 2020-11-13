@@ -1,8 +1,9 @@
 import React from "react";
-import {Form, Button, Table, Grid, Message, Icon} from "semantic-ui-react";
+import {Form, Button, Table, Grid, Message } from "semantic-ui-react";
 import { Field } from "redux-form";
 import { errorRenderer } from "../errors";
-import {required} from "../../validations";
+import DeleteConfirmationModal from "../DeleteConfirmationModal";
+import {OPEN_MODAL} from "../../actions/types";
 
 const roleOptions = [
     { key: 'ow', value: 'ow', text: 'Owner' },
@@ -29,7 +30,6 @@ const renderRowCheckBox = ({input, meta, required}) => {
             error={errorRenderer(meta, required)}
         />
     )
-
 }
 
 const renderRoles = ({input, name, key, meta, placeholder, required, options}) => {
@@ -63,6 +63,11 @@ const renderInput = ({input, name, key, meta, placeholder, required}) => {
         />);
 }
 
+
+const removeContactModal = dispatcher => {
+    dispatcher.dispatch({type: OPEN_MODAL, dimmer: 'blurring'});
+};
+
 const AddRemoveButtons = ({dispatcher}) => {
     const addRows = e => {
         e.preventDefault();
@@ -71,7 +76,7 @@ const AddRemoveButtons = ({dispatcher}) => {
 
     const removeSelectedRows = e => {
         e.preventDefault();
-        dispatcher.updateContacts(dispatcher.form, 'contacts', dispatcher.contacts.filter(row => !row.selected))
+        removeContactModal(dispatcher);
     };
 
     if(!dispatcher.contacts || !dispatcher.contacts.length) {
@@ -102,6 +107,7 @@ const AddRemoveButtons = ({dispatcher}) => {
                         icon='delete user'
                         negative
                         labelPosition='left'
+                        disabled={!dispatcher.contacts || !dispatcher.contacts.filter(row => row.selected).length}
                         onClick={removeSelectedRows}
                 />
             </Grid.Column>
@@ -133,13 +139,13 @@ export const contacts = ({ fields, dispatchers }) => {
                 </Message>
                 <AddRemoveButtons dispatcher={props}/>
             </div>
-
         );
     }
 
     return (
         <div>
             <AddRemoveButtons dispatcher={props}/>
+            <DeleteConfirmationModal dispatcher={props}/>
             <Table compact padded collapsing celled selectable stackable striped>
                 <Table.Header>
                     <Table.Row>
