@@ -1,5 +1,5 @@
 import React from "react";
-import {Form, Button, Table, Grid, Message } from "semantic-ui-react";
+import {Form, Button, Table, Grid, Message, Icon } from "semantic-ui-react";
 import { Field } from "redux-form";
 import { errorRenderer } from "../errors";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
@@ -139,6 +139,16 @@ export const contacts = ({ fields, dispatchers }) => {
         );
     }
 
+    const renderContactDetailIcon = () => {
+        return(
+            <div>
+                <Icon name='mail' />
+                <Icon name='mobile alternate' />
+                <Icon name='phone' />
+            </div>
+        );
+    }
+
     return (
         <div>
             <AddRemoveButtons dispatcher={props}/>
@@ -154,15 +164,10 @@ export const contacts = ({ fields, dispatchers }) => {
                                 dispatcher={props}
                             />
                         </Table.HeaderCell>
-                        <Table.HeaderCell>
-                            First Name
-                        </Table.HeaderCell>
-                        <Table.HeaderCell>
-                            Last Name
-                        </Table.HeaderCell>
-                        <Table.HeaderCell>
-                            Role
-                        </Table.HeaderCell>
+                        <Table.HeaderCell content='First Name' />
+                        <Table.HeaderCell content='Last Name' />
+                        <Table.HeaderCell content='Role' />
+                        <Table.HeaderCell />
                         <Table.HeaderCell />
                     </Table.Row>
                 </Table.Header>
@@ -205,8 +210,16 @@ export const contacts = ({ fields, dispatchers }) => {
                                         placeholder='Select a role...'
                                     />
                                 </Table.Cell>
+                                <Table.Cell collapsing textAlign='center' >
+                                    <Button
+                                            icon={{children: renderContactDetailIcon}}
+                                            name='contactDetails'
+                                            color='teal'
+                                            onClick={e => e.preventDefault()}
+                                    />
+                                </Table.Cell>
                                 <Table.Cell collapsing textAlign='center'>
-                                    <Button icon='user delete'
+                                    <Button icon='delete'
                                             negative
                                             circular
                                             size='mini'

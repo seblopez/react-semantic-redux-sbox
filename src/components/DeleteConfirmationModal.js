@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Modal, Header, List} from "semantic-ui-react";
+import {Button, Modal, Header, List, Icon} from "semantic-ui-react";
 import { CLOSE_MODAL } from "../actions/types";
 import { connect } from "react-redux";
 
@@ -23,26 +23,30 @@ class DeleteConfirmationModal extends React.Component {
 
         if(contactIndex >= 0) {
             const contact = this.props.dispatcher.contacts[contactIndex];
-            const contactName = contact.firstName || contact.lastName ? `${contact.firstName} ${contact.lastName} as contact?` : 'this row?';
+            const firstName = contact.firstName ? `${contact.firstName}` : '(no First Name)';
+            const lastName = contact.lastName ? `${contact.lastName}` : '(no Last Name)';
+            const contactName =`${firstName} ${lastName} as contact?`;
             return(`Are you sure you want to delete ${contactName}`);
         } else {
             const contacts = this.props.dispatcher.contacts
             return(
-                <div>
-                    Are you sure you want to delete these contacts?
-                    <List>
-                        {contacts.filter(contact => contact.selected)
-                            .map(selectedContact => {
-                                return(
-                                    <List.Item icon='user delete red' content={`${selectedContact.firstName} ${selectedContact.lastName}`}/>
-                                );
-                            })}
-                    </List>
-                </div>
+                <List>
+                    <List.Header content='Are you sure you want to delete these contacts?' />
+                    {contacts
+                        .filter(contact => contact.selected)
+                        .map((selectedContact, index) => {
+                            const firstName = selectedContact.firstName ? `${selectedContact.firstName}` : '(no First Name)';
+                            const lastName = selectedContact.lastName ? `${selectedContact.lastName}` : '(no Last Name)';
+                            return(
+                                <List.Item key={`tbr${index}`}>
+                                    <List.Icon name='delete' color='red' />
+                                    <List.Content>{`${firstName} ${lastName}`}</List.Content>
+                                </List.Item>
+                            );
+                        })}
+                </List>
             );
         }
-
-
     }
 
     render() {
@@ -56,12 +60,17 @@ class DeleteConfirmationModal extends React.Component {
                 dimmer={this.props.modal.dimmer}
                 onClose={() => this.props.dispatcher.dispatch({ type: 'CLOSE_MODAL' })}
             >
-                <Header icon="delete user circular red inverted" content="Delete Contact(s)" />
+                <Header>
+                    <Icon name='user delete' circular color='red' inverted size='small'/>
+                    Delete contact(s)
+                </Header>
                 <Modal.Content content={this.renderContent()} />
                 <Modal.Actions>
                     <Button
+                        content='Delete'
+                        negative
                         onClick={() => this.handleDeleteClick()}
-                        className="ui button negative">Delete</Button>
+                    />
                     <Button onClick={() => this.handleCancelClick()}>Cancel</Button>
                 </Modal.Actions>
             </Modal>

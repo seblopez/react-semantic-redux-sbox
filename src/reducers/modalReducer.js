@@ -6,7 +6,6 @@ const INITIAL_STATE = {
 };
 
 const modalReducer = (state = INITIAL_STATE, action) => {
-    console.log('Entering modal reducer ', state);
     switch (action.type) {
         case OPEN_MODAL:
             return { ...state, open: true, dimmer: action.dimmer, index: action.index };
