@@ -7,7 +7,6 @@ import {
     validate
 } from "../validations";
 import "./RegisterForm.css";
-import "./styled";
 import { errorRenderer } from "./errors";
 
 const specialtyOptions = [

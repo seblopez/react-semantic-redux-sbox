@@ -139,16 +139,6 @@ export const contacts = ({ fields, dispatchers }) => {
         );
     }
 
-    const renderContactDetailIcon = () => {
-        return(
-            <div>
-                <Icon name='mail' />
-                <Icon name='mobile alternate' />
-                <Icon name='phone' />
-            </div>
-        );
-    }
-
     return (
         <div>
             <AddRemoveButtons dispatcher={props}/>
@@ -167,7 +157,9 @@ export const contacts = ({ fields, dispatchers }) => {
                         <Table.HeaderCell content='First Name' />
                         <Table.HeaderCell content='Last Name' />
                         <Table.HeaderCell content='Role' />
-                        <Table.HeaderCell />
+                        <Table.HeaderCell content='eMail' />
+                        <Table.HeaderCell content='Mobile' />
+                        <Table.HeaderCell content='Phone' />
                         <Table.HeaderCell />
                     </Table.Row>
                 </Table.Header>
@@ -210,12 +202,28 @@ export const contacts = ({ fields, dispatchers }) => {
                                         placeholder='Select a role...'
                                     />
                                 </Table.Cell>
-                                <Table.Cell collapsing textAlign='center' >
-                                    <Button
-                                            icon={{children: renderContactDetailIcon}}
-                                            name='contactDetails'
-                                            color='teal'
-                                            onClick={e => e.preventDefault()}
+                                <Table.Cell>
+                                    <Field
+                                        key={`email${index}`}
+                                        name={`${contact}.email`}
+                                        component={renderInput}
+                                        placeholder='johndoe@someco.com'
+                                    />
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Field
+                                        key={`mobile${index}`}
+                                        name={`${contact}.mobile`}
+                                        component={renderInput}
+                                        placeholder='+123 4 123 4567-8911'
+                                    />
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Field
+                                        key={`phone${index}`}
+                                        name={`${contact}.phone`}
+                                        component={renderInput}
+                                        placeholder='+123 123 4567-8911'
                                     />
                                 </Table.Cell>
                                 <Table.Cell collapsing textAlign='center'>

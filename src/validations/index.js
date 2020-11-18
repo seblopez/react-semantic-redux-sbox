@@ -36,6 +36,11 @@ export const validate = formValues => {
             if(!contact.role) {
                 contactArrayErrors[index] = {...contactArrayErrors[index], role: 'You must enter a role'};
             }
+
+            if(contact.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email)) {
+                console.log('email validation ', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email));
+                contactArrayErrors[index] = {...contactArrayErrors[index], email: 'Invalid email address'};
+            }
         });
 
         if(contactArrayErrors.length) {
