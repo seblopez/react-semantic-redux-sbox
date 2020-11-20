@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import {Field, FieldArray, reduxForm, arrayPush, change, formValueSelector} from "redux-form";
-import { contacts } from "./fields";
+import { contactsTab } from "./fields";
 import { Form, Grid, Button, Tab } from "semantic-ui-react";
 import {
     validate
@@ -18,14 +18,14 @@ const specialtyOptions = [
 
 const panes = props => [
     { menuItem: { key: 'users', icon: 'users', content: 'Contacts' }, render: () => <Tab.Pane><Contacts props={props}/></Tab.Pane>},
-    { menuItem: { key: 'location', icon: 'location arrow', content: 'Locations' }, render: () => <Tab.Pane>Tab 2 Content</Tab.Pane>}
+    { menuItem: { key: 'location', icon: 'location arrow', content: 'Locations' }, render: () => <Tab.Pane className='wrapped'>Tab 2 Content</Tab.Pane>}
 ];
 
 const Contacts = props => {
     return (
         <Grid>
             <Grid.Column>
-                <FieldArray name="contacts" component={contacts} dispatchers={props} />
+                <FieldArray name="contacts" component={contactsTab} dispatchers={props} />
             </Grid.Column>
         </Grid>);
 }
@@ -142,6 +142,13 @@ RegisterForm = connect(state => {
     const contacts = selector(state, 'contacts');
     return { contacts };
 })(RegisterForm);
+
+RegisterForm = connect(state => {
+    const activePage = state.contactPagination.page;
+    const totalPages = state.contactPagination.totalPages;
+    const pageSize = state.contactPagination.pageSize;
+    return { activePage, pageSize, totalPages };
+})(RegisterForm)
 
 export default connect(
     null,

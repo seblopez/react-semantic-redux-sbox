@@ -1,9 +1,9 @@
 import React from "react";
-import {Form, Button, Table, Grid, Message, Icon } from "semantic-ui-react";
+import {Form, Button, Table, Grid, Message, Pagination} from "semantic-ui-react";
 import { Field } from "redux-form";
 import { errorRenderer } from "../errors";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
-import {OPEN_MODAL} from "../../actions/types";
+import {MOVE_TO_CONTACTS_PAGE, OPEN_MODAL} from "../../actions/types";
 
 const roleOptions = [
     { key: 'ow', value: 'ow', text: 'Owner' },
@@ -40,7 +40,6 @@ const renderRoles = ({input, name, key, meta, placeholder, required, options}) =
             placeholder={placeholder}
             search
             selection
-            fluid
             options={options}
             value={input.value}
             required={required}
@@ -65,7 +64,6 @@ const renderInput = ({input, name, key, meta, placeholder, required}) => {
 
 
 const AddRemoveButtons = ({dispatcher}) => {
-
     const addRows = e => {
         e.preventDefault();
         dispatcher.pushArray(dispatcher.form, 'contacts', '');
@@ -112,15 +110,121 @@ const AddRemoveButtons = ({dispatcher}) => {
     );
 }
 
-const BottomAddRemoveButtons = ({dispatcher}) => {
-    if(dispatcher.props.contacts && dispatcher.props.contacts.length > 5) {
-        return <AddRemoveButtons dispatcher={dispatcher.props}/>
+const BottomAddRemoveButtons = dispatcher => {
+    if(dispatcher.contacts && dispatcher.contacts.length > 5) {
+        return <AddRemoveButtons dispatcher={dispatcher}/>
     } else {
         return null;
     }
 }
 
-export const contacts = ({ fields, dispatchers }) => {
+const TablePagination = ({dispatch, contacts, pageSize}) => {
+    if(contacts && contacts.length > pageSize) {
+        const contactCount = contacts.length
+        const totalPages = contactCount % pageSize > 0 ? Math.floor(contactCount / pageSize) + 1 : Math.floor(contactCount / pageSize);
+        return (
+            <Grid>
+                <Grid.Column>
+                    <Pagination
+                        floated='right'
+                        defaultActivePage={1}
+                        totalPages={totalPages}
+                        onPageChange={(e, data) => dispatch({ type: MOVE_TO_CONTACTS_PAGE, page: data.activePage, pageSize: pageSize, totalPages: totalPages})}
+                    />
+                </Grid.Column>
+            </Grid>
+        );
+    } else {
+        return null;
+    }
+}
+
+const ContactRows = ({fields, dispatch, page, pageSize}) => {
+    const lastPageIndex = page * pageSize;
+    const firstPageIndex = lastPageIndex - pageSize;
+    return fields
+        .map(contact => contact)
+        .slice(firstPageIndex, lastPageIndex)
+        .map((contact, index) => {
+            return(
+                <Table.Row key={index}>
+                    <Table.Cell collapsing textAlign='center'>
+                        <Field
+                            key={`${contact}.selected`}
+                            component={renderRowCheckBox}
+                            name={`${contact}.selected`}
+                        />
+                    </Table.Cell>
+                    <Table.Cell>
+                        <Field
+                            key={`firstName${index}`}
+                            name={`${contact}.firstName`}
+                            component={renderInput}
+                            placeholder={`Enter the contact's first name...`}
+                            required={true}
+                        />
+                    </Table.Cell>
+                    <Table.Cell>
+                        <Field
+                            key={`lastName${index}`}
+                            name={`${contact}.lastName`}
+                            placeholder={`Enter the contact's last name...`}
+                            component={renderInput}
+                            required={true}
+                        />
+                    </Table.Cell>
+                    <Table.Cell>
+                        <Field
+                            key={`role${index}`}
+                            name={`${contact}.role`}
+                            component={renderRoles}
+                            required={true}
+                            options={roleOptions}
+                            placeholder='Select a role...'
+                        />
+                    </Table.Cell>
+                    <Table.Cell>
+                        <Field
+                            key={`email${index}`}
+                            name={`${contact}.email`}
+                            component={renderInput}
+                            placeholder='johndoe@someco.com'
+                        />
+                    </Table.Cell>
+                    <Table.Cell>
+                        <Field
+                            key={`mobile${index}`}
+                            name={`${contact}.mobile`}
+                            component={renderInput}
+                            placeholder='+123 4 123 4567-8911'
+                        />
+                    </Table.Cell>
+                    <Table.Cell>
+                        <Field
+                            key={`phone${index}`}
+                            name={`${contact}.phone`}
+                            component={renderInput}
+                            placeholder='+123 123 4567-8911'
+                        />
+                    </Table.Cell>
+                    <Table.Cell collapsing textAlign='center'>
+                        <Button icon='delete'
+                                negative
+                                circular
+                                size='mini'
+                                name='delete'
+                                onClick={e => {
+                                    e.preventDefault();
+                                    dispatch({type: OPEN_MODAL, dimmer: 'blurring', index: index });
+                                } } >
+                        </Button>
+                    </Table.Cell>
+                </Table.Row>);}
+    );
+}
+
+
+export const contactsTab = ({ fields, dispatchers }) => {
     const props = dispatchers.props;
 
     if(!fields.length) {
@@ -143,7 +247,7 @@ export const contacts = ({ fields, dispatchers }) => {
         <div>
             <AddRemoveButtons dispatcher={props}/>
             <DeleteConfirmationModal dispatcher={props} />
-            <Table compact padded collapsing celled selectable stackable striped>
+            <Table celled stackable striped>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell collapsing textAlign='center'>
@@ -164,85 +268,10 @@ export const contacts = ({ fields, dispatchers }) => {
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                    {fields.map((contact, index) => {
-                        return(
-                            <Table.Row key={index}>
-                                <Table.Cell collapsing textAlign='center'>
-                                    <Field
-                                        key={`${contact}.selected`}
-                                        component={renderRowCheckBox}
-                                        name={`${contact}.selected`}
-                                    />
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <Field
-                                        key={`firstName${index}`}
-                                        name={`${contact}.firstName`}
-                                        component={renderInput}
-                                        placeholder={`Enter the contact's first name...`}
-                                        required={true}
-                                    />
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <Field
-                                        key={`lastName${index}`}
-                                        name={`${contact}.lastName`}
-                                        placeholder={`Enter the contact's last name...`}
-                                        component={renderInput}
-                                        required={true}
-                                    />
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <Field
-                                        key={`role${index}`}
-                                        name={`${contact}.role`}
-                                        component={renderRoles}
-                                        required={true}
-                                        options={roleOptions}
-                                        placeholder='Select a role...'
-                                    />
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <Field
-                                        key={`email${index}`}
-                                        name={`${contact}.email`}
-                                        component={renderInput}
-                                        placeholder='johndoe@someco.com'
-                                    />
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <Field
-                                        key={`mobile${index}`}
-                                        name={`${contact}.mobile`}
-                                        component={renderInput}
-                                        placeholder='+123 4 123 4567-8911'
-                                    />
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <Field
-                                        key={`phone${index}`}
-                                        name={`${contact}.phone`}
-                                        component={renderInput}
-                                        placeholder='+123 123 4567-8911'
-                                    />
-                                </Table.Cell>
-                                <Table.Cell collapsing textAlign='center'>
-                                    <Button icon='delete'
-                                            negative
-                                            circular
-                                            size='mini'
-                                            name='delete'
-                                            onClick={e => {
-                                                e.preventDefault();
-                                                props.dispatch({type: OPEN_MODAL, dimmer: 'blurring', index: index });
-                                            } } >
-                                    </Button>
-                                </Table.Cell>
-                            </Table.Row>);}
-                    )}
+                    <ContactRows fields={fields} dispatch={props.dispatch} page={props.activePage} pageSize={props.pageSize}/>
                 </Table.Body>
             </Table>
-            <BottomAddRemoveButtons dispatcher={dispatchers}/>
+            <TablePagination dispatch={props.dispatch} contacts={props.contacts} pageSize={props.pageSize} totalRows={fields.length}/>
         </div>
     );
 };

@@ -8,10 +8,6 @@ class RegisterFormContainer extends Component {
     };
 
     getInitialValues() {
-        return {
-            preference: "spaces",
-            newsletter: true
-        };
     }
 
     render() {
