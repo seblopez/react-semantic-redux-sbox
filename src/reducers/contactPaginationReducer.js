@@ -1,5 +1,4 @@
 import { MOVE_TO_CONTACTS_PAGE } from "../actions/types";
-import {act} from "@testing-library/react";
 
 const INITIAL_STATE = {
     page: 1,

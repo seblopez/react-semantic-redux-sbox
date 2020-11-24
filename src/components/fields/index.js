@@ -4,6 +4,8 @@ import { Field } from "redux-form";
 import { errorRenderer } from "../errors";
 import DeleteConfirmationModal from "../DeleteConfirmationModal";
 import {MOVE_TO_CONTACTS_PAGE, OPEN_MODAL} from "../../actions/types";
+import TablePagination from "../tables/TablePagination";
+import AddRemoveButtons from "../tables/AddRemoveButtons";
 
 const roleOptions = [
     { key: 'ow', value: 'ow', text: 'Owner' },
@@ -60,83 +62,6 @@ const renderInput = ({input, name, key, meta, placeholder, required}) => {
             onChange={(e, {value}) => input.onChange(value)}
             error={errorRenderer(meta, required)}
         />);
-}
-
-
-const AddRemoveButtons = ({dispatcher}) => {
-    const addRows = e => {
-        e.preventDefault();
-        dispatcher.pushArray(dispatcher.form, 'contacts', '');
-    };
-
-    const removeSelectedRows = e => {
-        e.preventDefault();
-        dispatcher.dispatch({ type: OPEN_MODAL, dimmer: 'blurring' });
-    };
-
-    if(!dispatcher.contacts || !dispatcher.contacts.length) {
-        return (
-            <Grid>
-                <Grid.Column>
-                    <Button content='Add'
-                            icon='add user'
-                            primary
-                            labelPosition='left'
-                            onClick={addRows}
-                    />
-                </Grid.Column>
-            </Grid>
-        );
-    }
-
-    return(
-        <Grid>
-            <Grid.Column>
-                <Button content='Add'
-                        icon='add user'
-                        primary
-                        labelPosition='left'
-                        onClick={addRows}
-                />
-                <Button content='Remove'
-                        icon='delete user'
-                        negative
-                        labelPosition='left'
-                        disabled={!dispatcher.contacts || !dispatcher.contacts.filter(row => row.selected).length}
-                        onClick={removeSelectedRows}
-                />
-            </Grid.Column>
-        </Grid>
-    );
-}
-
-const BottomAddRemoveButtons = dispatcher => {
-    if(dispatcher.contacts && dispatcher.contacts.length > 5) {
-        return <AddRemoveButtons dispatcher={dispatcher}/>
-    } else {
-        return null;
-    }
-}
-
-const TablePagination = ({dispatch, contacts, pageSize}) => {
-    if(contacts && contacts.length > pageSize) {
-        const contactCount = contacts.length
-        const totalPages = contactCount % pageSize > 0 ? Math.floor(contactCount / pageSize) + 1 : Math.floor(contactCount / pageSize);
-        return (
-            <Grid>
-                <Grid.Column>
-                    <Pagination
-                        floated='right'
-                        defaultActivePage={1}
-                        totalPages={totalPages}
-                        onPageChange={(e, data) => dispatch({ type: MOVE_TO_CONTACTS_PAGE, page: data.activePage, pageSize: pageSize, totalPages: totalPages})}
-                    />
-                </Grid.Column>
-            </Grid>
-        );
-    } else {
-        return null;
-    }
 }
 
 const ContactRows = ({fields, dispatch, page, pageSize}) => {
@@ -238,14 +163,28 @@ export const contactsTab = ({ fields, dispatchers }) => {
                         You currently don't have any contacts created, go ahead and add some!
                     </Message.Content>
                 </Message>
-                <AddRemoveButtons dispatcher={props}/>
+                <AddRemoveButtons
+                    dispatcher={props}
+                    entity={props.contacts}
+                    entityName='contacts'
+                    action={{type: OPEN_MODAL, dimmer:'blurring'}}
+                    addButtonIcon='add user'
+                    deleteButtonIcon='delete user'
+                />
             </div>
         );
     }
 
     return (
         <div>
-            <AddRemoveButtons dispatcher={props}/>
+            <AddRemoveButtons
+                dispatcher={props}
+                entity={props.contacts}
+                entityName='contacts'
+                action={{type: OPEN_MODAL, dimmer:'blurring'}}
+                addButtonIcon='add user'
+                deleteButtonIcon='delete user'
+            />
             <DeleteConfirmationModal dispatcher={props} />
             <Table celled stackable striped>
                 <Table.Header>
@@ -271,7 +210,7 @@ export const contactsTab = ({ fields, dispatchers }) => {
                     <ContactRows fields={fields} dispatch={props.dispatch} page={props.activePage} pageSize={props.pageSize}/>
                 </Table.Body>
             </Table>
-            <TablePagination dispatch={props.dispatch} contacts={props.contacts} pageSize={props.pageSize} totalRows={fields.length}/>
+            <TablePagination dispatch={props.dispatch} entity={props.contacts} pageSize={props.pageSize} event={MOVE_TO_CONTACTS_PAGE}/>
         </div>
     );
 };
