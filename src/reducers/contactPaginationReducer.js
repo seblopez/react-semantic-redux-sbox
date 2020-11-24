@@ -1,15 +1,15 @@
 import { MOVE_TO_CONTACTS_PAGE } from "../actions/types";
 
 const INITIAL_STATE = {
-    page: 1,
-    pageSize: 5,
-    totalPages: 1
+    contactsActivePage: 1,
+    contactsPageSize: 5,
+    contactsTotalPages: 1
 }
 
 const contactPaginationReducer = (state = INITIAL_STATE, action) => {
     switch (action.type) {
         case MOVE_TO_CONTACTS_PAGE:
-            return { ...state, page: action.page, pageSize: action.pageSize, totalPages: action.totalPages };
+            return { ...state, contactsActivePage: action.page, contactsPageSize: action.pageSize, contactsTotalPages: action.totalPages };
         default:
             return state;
     }

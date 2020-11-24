@@ -1,25 +1,25 @@
 import React from "react";
 import {Button, Modal, Header, List, Icon} from "semantic-ui-react";
-import { CLOSE_MODAL } from "../actions/types";
+import { CLOSE_CONTACT_DELETE_MODAL } from "../../actions/types";
 import { connect } from "react-redux";
 
-class DeleteConfirmationModal extends React.Component {
+class DeleteContactConfirmationModal extends React.Component {
 
     handleDeleteClick() {
-        if(this.props.modal.index >= 0) {
-            this.props.dispatcher.updateContacts(this.props.dispatcher.form, 'contacts', this.props.dispatcher.contacts.filter((_, i) => i !== this.props.modal.index));
+        if(this.props.deleteContactModal.index >= 0) {
+            this.props.dispatcher.updateContacts(this.props.dispatcher.form, 'contacts', this.props.dispatcher.contacts.filter((_, i) => i !== this.props.deleteContactModal.index));
         } else {
             this.props.dispatcher.updateContacts(this.props.dispatcher.form, 'contacts', this.props.dispatcher.contacts.filter(row => !row.selected));
         }
-        this.props.dispatcher.dispatch({type: CLOSE_MODAL});
+        this.props.dispatcher.dispatch({type: CLOSE_CONTACT_DELETE_MODAL});
     }
 
     handleCancelClick() {
-        this.props.dispatcher.dispatch({type: CLOSE_MODAL})
+        this.props.dispatcher.dispatch({type: CLOSE_CONTACT_DELETE_MODAL})
     }
 
     renderContent() {
-        const contactIndex = this.props.modal.index;
+        const contactIndex = this.props.deleteContactModal.index;
 
         if(contactIndex >= 0) {
             const contact = this.props.dispatcher.contacts[contactIndex];
@@ -29,6 +29,13 @@ class DeleteConfirmationModal extends React.Component {
             return(`Are you sure you want to delete ${contactName}`);
         } else {
             const contacts = this.props.dispatcher.contacts
+            if(!contacts) {
+                return(
+                    <List>
+                        <List.Header content='No contacts to remove.' />
+                    </List>
+                );
+            }
             return(
                 <List>
                     <List.Header content='Are you sure you want to delete these contacts?' />
@@ -56,12 +63,12 @@ class DeleteConfirmationModal extends React.Component {
                 centered={false}
                 closeOnEscape={true}
                 closeOnDimmerClick={true}
-                open={this.props.modal.open}
-                dimmer={this.props.modal.dimmer}
-                onClose={() => this.props.dispatcher.dispatch({ type: 'CLOSE_MODAL' })}
+                open={this.props.deleteContactModal.open}
+                dimmer={this.props.deleteContactModal.dimmer}
+                onClose={() => this.props.dispatcher.dispatch({ type: CLOSE_CONTACT_DELETE_MODAL })}
             >
                 <Header>
-                    <Icon name='user delete' circular color='red' inverted size='small'/>
+                    <Icon name='delete' circular color='red' inverted size='small'/>
                     Delete contact(s)
                 </Header>
                 <Modal.Content content={this.renderContent()} />
@@ -81,8 +88,8 @@ class DeleteConfirmationModal extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        modal: state.modal
+        deleteContactModal: state.deleteContactModal
     }
 }
 
-export default connect(mapStateToProps)(DeleteConfirmationModal);
+export default connect(mapStateToProps)(DeleteContactConfirmationModal);

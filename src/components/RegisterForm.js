@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import {Field, FieldArray, reduxForm, arrayPush, change, formValueSelector} from "redux-form";
-import { contactsTab } from "./fields";
+import { contactsTab } from "./contacts";
 import { Form, Grid, Button, Tab } from "semantic-ui-react";
 import {
     validate
 } from "../validations";
 import "./RegisterForm.css";
 import { errorRenderer } from "./errors";
+import {locationsTab} from "../locations";
 
 const specialtyOptions = [
     { key: 'gas', text: 'Gas', value: '1233d3dde' },
@@ -18,16 +19,27 @@ const specialtyOptions = [
 
 const panes = props => [
     { menuItem: { key: 'users', icon: 'users', content: 'Contacts' }, render: () => <Tab.Pane><Contacts props={props}/></Tab.Pane>},
-    { menuItem: { key: 'location', icon: 'location arrow', content: 'Locations' }, render: () => <Tab.Pane className='wrapped'>Tab 2 Content</Tab.Pane>}
+    { menuItem: { key: 'location', icon: 'location arrow', content: 'Locations' }, render: () => <Tab.Pane><Locations props={props} /></Tab.Pane>}
 ];
 
 const Contacts = props => {
-    return (
+    return(
         <Grid>
             <Grid.Column>
                 <FieldArray name="contacts" component={contactsTab} dispatchers={props} />
             </Grid.Column>
         </Grid>);
+}
+
+const Locations = props => {
+    return(
+        <Grid>
+            <Grid.Column>
+                <FieldArray name="locations" component={locationsTab} dispatchers={props} />
+            </Grid.Column>
+        </Grid>
+
+    );
 }
 
 const tabs = props => <Tab panes={ panes(props) } />;
@@ -127,7 +139,8 @@ const mapDispatchToProps = {
     // NOTE: This MUST be aliased or it will not work
     pushArray: arrayPush,
     updateCheckBoxes: change,
-    updateContacts: change
+    updateContacts: change,
+    updateLocations: change
 };
 
 RegisterForm = reduxForm({
@@ -144,10 +157,22 @@ RegisterForm = connect(state => {
 })(RegisterForm);
 
 RegisterForm = connect(state => {
-    const activePage = state.contactPagination.page;
-    const totalPages = state.contactPagination.totalPages;
-    const pageSize = state.contactPagination.pageSize;
-    return { activePage, pageSize, totalPages };
+    const locations = selector(state, 'locations');
+    return { locations };
+})(RegisterForm);
+
+RegisterForm = connect(state => {
+    const contactsActivePage = state.contactPagination.contactsActivePage;
+    const contactsTotalPages = state.contactPagination.contactsTotalPages;
+    const contactsPageSize = state.contactPagination.contactsPageSize;
+    return { contactsActivePage, contactsPageSize, contactsTotalPages };
+})(RegisterForm)
+
+RegisterForm = connect(state => {
+    const locationsActivePage = state.locationPagination.locationsActivePage;
+    const locationsTotalPages = state.locationPagination.locationsTotalPages;
+    const locationsPageSize = state.locationPagination.locationsPageSize;
+    return { locationsActivePage, locationsPageSize, locationsTotalPages };
 })(RegisterForm)
 
 export default connect(

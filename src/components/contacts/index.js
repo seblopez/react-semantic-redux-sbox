@@ -1,38 +1,18 @@
 import React from "react";
-import {Form, Button, Table, Grid, Message, Pagination} from "semantic-ui-react";
+import {Form, Button, Table, Message} from "semantic-ui-react";
 import { Field } from "redux-form";
 import { errorRenderer } from "../errors";
-import DeleteConfirmationModal from "../DeleteConfirmationModal";
-import {MOVE_TO_CONTACTS_PAGE, OPEN_MODAL} from "../../actions/types";
+import DeleteContactConfirmationModal from "../modals/DeleteContactConfirmationModal";
+import {MOVE_TO_CONTACTS_PAGE, OPEN_CONTACT_DELETE_MODAL} from "../../actions/types";
 import TablePagination from "../tables/TablePagination";
 import AddRemoveButtons from "../tables/AddRemoveButtons";
+import {renderHeaderCheckBox, renderRowCheckBox} from "../MassChangeControls";
 
 const roleOptions = [
     { key: 'ow', value: 'ow', text: 'Owner' },
     { key: 'tc', value: 'tc', text: 'Technician' },
     { key: 'sc', value: 'sc', text: 'Secretary' }
 ];
-
-const renderHeaderCheckBox = ({input, fields, dispatcher}) => {
-    return(
-        <Form.Checkbox
-            onChange={(e, {checked}) => {
-                input.onChange(checked);
-                fields.map(field => dispatcher.updateCheckBoxes(dispatcher.form,`${field}.selected`, checked));
-            }}
-        />
-    )
-}
-
-const renderRowCheckBox = ({input, meta, required}) => {
-    return(
-        <Form.Checkbox
-            checked={!!input.value}
-            onChange={(e, { checked }) => input.onChange(checked)}
-            error={errorRenderer(meta, required)}
-        />
-    )
-}
 
 const renderRoles = ({input, name, key, meta, placeholder, required, options}) => {
     return(
@@ -140,7 +120,7 @@ const ContactRows = ({fields, dispatch, page, pageSize}) => {
                                 name='delete'
                                 onClick={e => {
                                     e.preventDefault();
-                                    dispatch({type: OPEN_MODAL, dimmer: 'blurring', index: index });
+                                    dispatch({type: OPEN_CONTACT_DELETE_MODAL, dimmer: 'blurring', index: index });
                                 } } >
                         </Button>
                     </Table.Cell>
@@ -151,6 +131,8 @@ const ContactRows = ({fields, dispatch, page, pageSize}) => {
 
 export const contactsTab = ({ fields, dispatchers }) => {
     const props = dispatchers.props;
+
+    console.log('Dispatchers ', dispatchers);
 
     if(!fields.length) {
         return(
@@ -167,9 +149,9 @@ export const contactsTab = ({ fields, dispatchers }) => {
                     dispatcher={props}
                     entity={props.contacts}
                     entityName='contacts'
-                    action={{type: OPEN_MODAL, dimmer:'blurring'}}
-                    addButtonIcon='add user'
-                    deleteButtonIcon='delete user'
+                    action={{type: OPEN_CONTACT_DELETE_MODAL, dimmer:'blurring'}}
+                    addButtonIcon='add'
+                    deleteButtonIcon='delete'
                 />
             </div>
         );
@@ -181,11 +163,11 @@ export const contactsTab = ({ fields, dispatchers }) => {
                 dispatcher={props}
                 entity={props.contacts}
                 entityName='contacts'
-                action={{type: OPEN_MODAL, dimmer:'blurring'}}
-                addButtonIcon='add user'
-                deleteButtonIcon='delete user'
+                action={{type: OPEN_CONTACT_DELETE_MODAL, dimmer:'blurring'}}
+                addButtonIcon='add'
+                deleteButtonIcon='delete'
             />
-            <DeleteConfirmationModal dispatcher={props} />
+            <DeleteContactConfirmationModal dispatcher={props} />
             <Table celled stackable striped>
                 <Table.Header>
                     <Table.Row>
@@ -207,10 +189,10 @@ export const contactsTab = ({ fields, dispatchers }) => {
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                    <ContactRows fields={fields} dispatch={props.dispatch} page={props.activePage} pageSize={props.pageSize}/>
+                    <ContactRows fields={fields} dispatch={props.dispatch} page={props.contactsActivePage} pageSize={props.contactsPageSize}/>
                 </Table.Body>
             </Table>
-            <TablePagination dispatch={props.dispatch} entity={props.contacts} pageSize={props.pageSize} event={MOVE_TO_CONTACTS_PAGE}/>
+            <TablePagination dispatch={props.dispatch} entity={props.contacts} pageSize={props.contactsPageSize} event={MOVE_TO_CONTACTS_PAGE}/>
         </div>
     );
 };

@@ -31,7 +31,7 @@ const AddRemoveButtons = ({dispatcher, action, entity, entityName, addButtonIcon
         <Grid>
             <Grid.Column>
                 <Button content='Add'
-                        icon={addButtonIcon}
+                        icon='add'
                         primary
                         labelPosition='left'
                         onClick={addRows}
