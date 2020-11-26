@@ -8,7 +8,7 @@ import {
 } from "../validations";
 import "./RegisterForm.css";
 import { errorRenderer } from "./errors";
-import {locationsTab} from "../locations";
+import {locationsTab} from "./locations";
 
 const specialtyOptions = [
     { key: 'gas', text: 'Gas', value: '1233d3dde' },
@@ -140,7 +140,8 @@ const mapDispatchToProps = {
     pushArray: arrayPush,
     updateCheckBoxes: change,
     updateContacts: change,
-    updateLocations: change
+    updateLocations: change,
+    updateRows: change
 };
 
 RegisterForm = reduxForm({

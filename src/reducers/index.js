@@ -1,12 +1,11 @@
 import { combineReducers } from "redux";
 import { reducer as formReducer } from 'redux-form';
-import deleteContactModalReducer from './deleteContactModalReducer'
+
+import deleteModalReducer from "./deleteModalReducer";
 import contactPaginationReducer from './contactPaginationReducer';
-import deleteLocationModalReducer from './deleteLocationModalReducer';
 import locationPaginationReducer from  './locationPaginationReducer';
 
 export default combineReducers({ form: formReducer,
-    deleteContactModal: deleteContactModalReducer,
-    deleteLocationModal: deleteLocationModalReducer,
+    deleteModal: deleteModalReducer,
     contactPagination: contactPaginationReducer,
     locationPagination: locationPaginationReducer} );

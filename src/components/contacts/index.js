@@ -2,11 +2,13 @@ import React from "react";
 import {Form, Button, Table, Message} from "semantic-ui-react";
 import { Field } from "redux-form";
 import { errorRenderer } from "../errors";
-import DeleteContactConfirmationModal from "../modals/DeleteContactConfirmationModal";
-import {MOVE_TO_CONTACTS_PAGE, OPEN_CONTACT_DELETE_MODAL} from "../../actions/types";
+import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
+import {MOVE_TO_CONTACTS_PAGE, OPEN_DELETE_MODAL, CLOSE_DELETE_MODAL} from "../../actions/types";
 import TablePagination from "../tables/TablePagination";
 import AddRemoveButtons from "../tables/AddRemoveButtons";
 import {renderHeaderCheckBox, renderRowCheckBox} from "../MassChangeControls";
+import {renderInput} from "../Input";
+import {calculatePageRowIndexes} from "../tables/PageRangeCalculator";
 
 const roleOptions = [
     { key: 'ow', value: 'ow', text: 'Owner' },
@@ -31,25 +33,12 @@ const renderRoles = ({input, name, key, meta, placeholder, required, options}) =
     )
 };
 
-const renderInput = ({input, name, key, meta, placeholder, required}) => {
-    return(
-        <Form.Input
-            key={key}
-            name={name}
-            placeholder={placeholder}
-            required={required}
-            value={input.value}
-            onChange={(e, {value}) => input.onChange(value)}
-            error={errorRenderer(meta, required)}
-        />);
-}
-
 const ContactRows = ({fields, dispatch, page, pageSize}) => {
-    const lastPageIndex = page * pageSize;
-    const firstPageIndex = lastPageIndex - pageSize;
+    const {firstIndex, lastIndex} = calculatePageRowIndexes(fields, page, pageSize);
+
     return fields
         .map(contact => contact)
-        .slice(firstPageIndex, lastPageIndex)
+        .slice(firstIndex, lastIndex)
         .map((contact, index) => {
             return(
                 <Table.Row key={index}>
@@ -62,7 +51,7 @@ const ContactRows = ({fields, dispatch, page, pageSize}) => {
                     </Table.Cell>
                     <Table.Cell>
                         <Field
-                            key={`firstName${index}`}
+                            key={`${contact}.firstName`}
                             name={`${contact}.firstName`}
                             component={renderInput}
                             placeholder={`Enter the contact's first name...`}
@@ -71,7 +60,7 @@ const ContactRows = ({fields, dispatch, page, pageSize}) => {
                     </Table.Cell>
                     <Table.Cell>
                         <Field
-                            key={`lastName${index}`}
+                            key={`${contact}.lastName`}
                             name={`${contact}.lastName`}
                             placeholder={`Enter the contact's last name...`}
                             component={renderInput}
@@ -80,7 +69,7 @@ const ContactRows = ({fields, dispatch, page, pageSize}) => {
                     </Table.Cell>
                     <Table.Cell>
                         <Field
-                            key={`role${index}`}
+                            key={`${contact}.role`}
                             name={`${contact}.role`}
                             component={renderRoles}
                             required={true}
@@ -90,7 +79,7 @@ const ContactRows = ({fields, dispatch, page, pageSize}) => {
                     </Table.Cell>
                     <Table.Cell>
                         <Field
-                            key={`email${index}`}
+                            key={`${contact}.email`}
                             name={`${contact}.email`}
                             component={renderInput}
                             placeholder='johndoe@someco.com'
@@ -98,7 +87,7 @@ const ContactRows = ({fields, dispatch, page, pageSize}) => {
                     </Table.Cell>
                     <Table.Cell>
                         <Field
-                            key={`mobile${index}`}
+                            key={`${contact}.mobile`}
                             name={`${contact}.mobile`}
                             component={renderInput}
                             placeholder='+123 4 123 4567-8911'
@@ -106,7 +95,7 @@ const ContactRows = ({fields, dispatch, page, pageSize}) => {
                     </Table.Cell>
                     <Table.Cell>
                         <Field
-                            key={`phone${index}`}
+                            key={`${contact}.phone`}
                             name={`${contact}.phone`}
                             component={renderInput}
                             placeholder='+123 123 4567-8911'
@@ -120,7 +109,7 @@ const ContactRows = ({fields, dispatch, page, pageSize}) => {
                                 name='delete'
                                 onClick={e => {
                                     e.preventDefault();
-                                    dispatch({type: OPEN_CONTACT_DELETE_MODAL, dimmer: 'blurring', index: index });
+                                    dispatch({type: OPEN_DELETE_MODAL, dimmer: 'blurring', index: firstIndex + index });
                                 } } >
                         </Button>
                     </Table.Cell>
@@ -132,7 +121,10 @@ const ContactRows = ({fields, dispatch, page, pageSize}) => {
 export const contactsTab = ({ fields, dispatchers }) => {
     const props = dispatchers.props;
 
-    console.log('Dispatchers ', dispatchers);
+    const messageFields = [
+        { field: 'firstName', noValue: '(no First Name)'},
+        { field: 'lastName', noValue: '(no Last Name)'}
+    ]
 
     if(!fields.length) {
         return(
@@ -147,9 +139,8 @@ export const contactsTab = ({ fields, dispatchers }) => {
                 </Message>
                 <AddRemoveButtons
                     dispatcher={props}
-                    entity={props.contacts}
                     entityName='contacts'
-                    action={{type: OPEN_CONTACT_DELETE_MODAL, dimmer:'blurring'}}
+                    action={{type: OPEN_DELETE_MODAL, dimmer:'blurring'}}
                     addButtonIcon='add'
                     deleteButtonIcon='delete'
                 />
@@ -163,11 +154,16 @@ export const contactsTab = ({ fields, dispatchers }) => {
                 dispatcher={props}
                 entity={props.contacts}
                 entityName='contacts'
-                action={{type: OPEN_CONTACT_DELETE_MODAL, dimmer:'blurring'}}
+                action={{type: OPEN_DELETE_MODAL, dimmer:'blurring'}}
                 addButtonIcon='add'
                 deleteButtonIcon='delete'
             />
-            <DeleteContactConfirmationModal dispatcher={props} />
+            <DeleteConfirmationModal
+                dispatcher={props}
+                entityName='contacts'
+                messageFields={messageFields}
+                action={{type: CLOSE_DELETE_MODAL}}
+            />
             <Table celled stackable striped>
                 <Table.Header>
                     <Table.Row>
@@ -189,7 +185,7 @@ export const contactsTab = ({ fields, dispatchers }) => {
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                    <ContactRows fields={fields} dispatch={props.dispatch} page={props.contactsActivePage} pageSize={props.contactsPageSize}/>
+                    <ContactRows fields={fields} dispatch={props.dispatch} page={props.contactsActivePage} pageSize={props.contactsPageSize} totalPages={props.contactsTotalPages}/>
                 </Table.Body>
             </Table>
             <TablePagination dispatch={props.dispatch} entity={props.contacts} pageSize={props.contactsPageSize} event={MOVE_TO_CONTACTS_PAGE}/>

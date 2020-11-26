@@ -1,5 +1,4 @@
 export const required = value => {
-    console.log('Required validation ', value);
     return value ? undefined : 'Value is required';
 }
 
@@ -38,7 +37,6 @@ export const validate = formValues => {
             }
 
             if(contact.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email)) {
-                console.log('email validation ', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email));
                 contactArrayErrors[index] = {...contactArrayErrors[index], email: 'Invalid email address'};
             }
         });

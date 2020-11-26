@@ -7,7 +7,6 @@ const INITIAL_STATE = {
 }
 
 const locationPaginationReducer = (state = INITIAL_STATE, action) => {
-    console.log('Pagination reducer state ', state);
     switch (action.type) {
         case MOVE_TO_LOCATIONS_PAGE:
             return { ...state, locationsActivePage: action.page, locationsPageSize: action.pageSize, locationsTotalPages: action.totalPages };

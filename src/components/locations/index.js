@@ -2,12 +2,18 @@ import React from "react";
 import {Message, Table, Button, Form} from "semantic-ui-react";
 import {Field} from "redux-form";
 
-import AddRemoveButtons from "../components/tables/AddRemoveButtons";
-import {MOVE_TO_LOCATIONS_PAGE, OPEN_LOCATION_DELETE_MODAL} from "../actions/types";
-import TablePagination from "../components/tables/TablePagination";
-import {renderHeaderCheckBox, renderRowCheckBox} from "../components/MassChangeControls";
-import {errorRenderer} from "../components/errors";
-import DeleteLocationConfirmationModal from "../components/modals/DeleteLocationConfirmationModal";
+import AddRemoveButtons from "../tables/AddRemoveButtons";
+import {
+    CLOSE_DELETE_MODAL,
+    MOVE_TO_LOCATIONS_PAGE,
+    OPEN_DELETE_MODAL
+} from "../../actions/types";
+import TablePagination from "../tables/TablePagination";
+import {renderHeaderCheckBox, renderRowCheckBox} from "../MassChangeControls";
+import {errorRenderer} from "../errors";
+import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
+import {renderInput} from "../Input";
+import {calculatePageRowIndexes} from "../tables/PageRangeCalculator";
 
 const cities = [
     {
@@ -155,14 +161,16 @@ const renderCountry = ({input, name, key, meta, placeholder, required, options})
 };
 
 const LocationRows = ({fields, dispatch, page, pageSize}) => {
-    const lastPageIndex = page * pageSize;
-    const firstPageIndex = lastPageIndex - pageSize;
-    console.log('Page ', page);
-    console.log('Page size ', pageSize);
+    const {firstIndex, lastIndex} = calculatePageRowIndexes(fields, page, pageSize);
+    console.log('First index ', firstIndex);
+    console.log('Last index ', lastIndex);
+
     return fields
             .map(location => location)
-            .slice(firstPageIndex, lastPageIndex)
+            .slice(firstIndex, lastIndex)
             .map((location, index) => {
+                console.log('Index ', index)
+                console.log('Location ', location);
                 return(
                     <Table.Row key={index}>
                         <Table.Cell collapsing textAlign='center'>
@@ -174,7 +182,7 @@ const LocationRows = ({fields, dispatch, page, pageSize}) => {
                         </Table.Cell>
                         <Table.Cell>
                             <Field
-                                key={`name${index}`}
+                                key={`${location}.name`}
                                 name={`${location}.name`}
                                 component={renderInput}
                                 placeholder={`Enter the location's name...`}
@@ -183,7 +191,7 @@ const LocationRows = ({fields, dispatch, page, pageSize}) => {
                         </Table.Cell>
                         <Table.Cell>
                             <Field
-                                key={`address${index}`}
+                                key={`${location}.address`}
                                 name={`${location}.address`}
                                 placeholder={`Enter the location's address...`}
                                 component={renderInput}
@@ -192,7 +200,7 @@ const LocationRows = ({fields, dispatch, page, pageSize}) => {
                         </Table.Cell>
                         <Table.Cell>
                             <Field
-                                key={`city${index}`}
+                                key={`${location}.role`}
                                 name={`${location}.role`}
                                 component={renderCity}
                                 required={true}
@@ -202,7 +210,7 @@ const LocationRows = ({fields, dispatch, page, pageSize}) => {
                         </Table.Cell>
                         <Table.Cell>
                             <Field
-                                key={`zip${index}`}
+                                key={`${location}.zip`}
                                 name={`${location}.zip`}
                                 component={renderInput}
                                 placeholder='Enter a zip/postal code...'
@@ -210,7 +218,7 @@ const LocationRows = ({fields, dispatch, page, pageSize}) => {
                         </Table.Cell>
                         <Table.Cell>
                             <Field
-                                key={`state${index}`}
+                                key={`${location}.state`}
                                 name={`${location}.state`}
                                 component={renderState}
                                 options={states}
@@ -219,7 +227,7 @@ const LocationRows = ({fields, dispatch, page, pageSize}) => {
                         </Table.Cell>
                         <Table.Cell>
                             <Field
-                                key={`country${index}`}
+                                key={`${location}.country`}
                                 name={`${location}.country`}
                                 component={renderCountry}
                                 options={countries}
@@ -234,7 +242,7 @@ const LocationRows = ({fields, dispatch, page, pageSize}) => {
                                     name='delete'
                                     onClick={e => {
                                         e.preventDefault();
-                                        dispatch({type: OPEN_LOCATION_DELETE_MODAL, dimmer: 'blurring', index: index });
+                                        dispatch({type: OPEN_DELETE_MODAL, dimmer: 'blurring', index: firstIndex + index });
                                     } } >
                             </Button>
                         </Table.Cell>
@@ -242,23 +250,13 @@ const LocationRows = ({fields, dispatch, page, pageSize}) => {
             );
 }
 
-const renderInput = ({input, name, key, meta, placeholder, required}) => {
-    return(
-        <Form.Input
-            key={key}
-            name={name}
-            placeholder={placeholder}
-            required={required}
-            value={input.value}
-            onChange={(e, {value}) => input.onChange(value)}
-            error={errorRenderer(meta, required)}
-        />);
-}
-
 export const locationsTab = ({fields, dispatchers}) => {
     const props = dispatchers.props;
 
-    console.log('Location Props ', props);
+    const messageFields = [
+        { field: 'name', noValue: '(no First Name)'}
+    ]
+
 
     if(!fields.length) {
         return(
@@ -275,7 +273,7 @@ export const locationsTab = ({fields, dispatchers}) => {
                     dispatcher={props}
                     entity={props.locations}
                     entityName='locations'
-                    action={{type: OPEN_LOCATION_DELETE_MODAL, dimmer:'blurring'}}
+                    action={{type: OPEN_DELETE_MODAL, dimmer:'blurring'}}
                     addButtonIcon='add'
                     deleteButtonIcon='delete'
                 />
@@ -289,11 +287,15 @@ export const locationsTab = ({fields, dispatchers}) => {
                 dispatcher={props}
                 entity={props.locations}
                 entityName='locations'
-                action={{type: OPEN_LOCATION_DELETE_MODAL, dimmer:'blurring'}}
+                action={{type: OPEN_DELETE_MODAL, dimmer:'blurring'}}
                 addButtonIcon='add'
                 deleteButtonIcon='delete'
             />
-            <DeleteLocationConfirmationModal dispatcher={props} />
+            <DeleteConfirmationModal
+                dispatcher={props}
+                entityName='locations'
+                messageFields={messageFields}
+                action={{type: CLOSE_DELETE_MODAL}}/>
             <Table celled stackable striped>
                 <Table.Header>
                     <Table.Row>
