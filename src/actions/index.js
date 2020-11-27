@@ -2,7 +2,8 @@ import {
     MOVE_TO_CONTACTS_PAGE,
     MOVE_TO_LOCATIONS_PAGE,
     OPEN_DELETE_MODAL,
-    CLOSE_DELETE_MODAL
+    CLOSE_DELETE_MODAL,
+    CITY_CHANGED
 } from "./types";
 
 export const openDeleteModal = () => {
@@ -26,5 +27,11 @@ export const moveToContactsPage = () => {
 export const moveToLocationsPage = () => {
     return {
         type: MOVE_TO_LOCATIONS_PAGE
+    };
+}
+
+export const cityChanged = () => {
+    return {
+        type: CITY_CHANGED
     };
 }

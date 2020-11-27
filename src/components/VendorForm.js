@@ -6,7 +6,7 @@ import { Form, Grid, Button, Tab } from "semantic-ui-react";
 import {
     validate
 } from "../validations";
-import "./RegisterForm.css";
+import "./VendorForm.css";
 import { errorRenderer } from "./errors";
 import {locationsTab} from "./locations";
 
@@ -44,18 +44,24 @@ const Locations = props => {
 
 const tabs = props => <Tab panes={ panes(props) } />;
 
-class RegisterForm extends Component {
+class VendorForm extends Component {
     componentDidMount() {
-        /*
         this.props.initialize({
             name: 'Ovelar Hnos.',
             specialties: [ '1233d3dde', '1232d3eda'],
             contacts: [
-                { firstName: 'Jonas', lastName: 'Kahnwald', role: 'ow' },
-                { firstName: 'Martha', lastName: 'Nielsen', role: 'tc' }
-                ]
+                { firstName: 'Jonas', lastName: 'Kahnwald', role: 'ow', email: 'jonas.kahnwald@ovelarhnos.com', mobile: '+54 9 11 4322-3435' },
+                { firstName: 'Martha', lastName: 'Nielsen', role: 'tc', email: 'martha.nielsen@ovelarhnos.com', mobile: '+54 9 11 4322-3432'  }
+                ],
+            locations: [
+                { name: 'Casa Central',
+                    address: 'Arenales 3135',
+                    zip: '1425',
+                    city: '2324342213as23e',
+                    state: '345343243s3dlk',
+                    country: '343qwd34wsd343'}
+            ]
         });
-        */
     }
 
     renderInput = ({ name, label, required, placeholder, meta, input }) => {
@@ -144,39 +150,46 @@ const mapDispatchToProps = {
     updateRows: change
 };
 
-RegisterForm = reduxForm({
+VendorForm = reduxForm({
     form: "register",
     touchOnChange: true,
     validate
-})(RegisterForm);
+})(VendorForm);
 
 const selector = formValueSelector('register');
 
-RegisterForm = connect(state => {
+VendorForm = connect(state => {
     const contacts = selector(state, 'contacts');
     return { contacts };
-})(RegisterForm);
+})(VendorForm);
 
-RegisterForm = connect(state => {
+VendorForm = connect(state => {
     const locations = selector(state, 'locations');
     return { locations };
-})(RegisterForm);
+})(VendorForm);
 
-RegisterForm = connect(state => {
+VendorForm = connect(state => {
+    const cityState = state.cityChanged.cityState;
+    const cityIndex = state.cityChanged.cityIndex;
+    const cityCountry = state.cityChanged.cityCountry;
+    return {cityState, cityIndex, cityCountry};
+})(VendorForm);
+
+VendorForm = connect(state => {
     const contactsActivePage = state.contactPagination.contactsActivePage;
     const contactsTotalPages = state.contactPagination.contactsTotalPages;
     const contactsPageSize = state.contactPagination.contactsPageSize;
     return { contactsActivePage, contactsPageSize, contactsTotalPages };
-})(RegisterForm)
+})(VendorForm)
 
-RegisterForm = connect(state => {
+VendorForm = connect(state => {
     const locationsActivePage = state.locationPagination.locationsActivePage;
     const locationsTotalPages = state.locationPagination.locationsTotalPages;
     const locationsPageSize = state.locationPagination.locationsPageSize;
     return { locationsActivePage, locationsPageSize, locationsTotalPages };
-})(RegisterForm)
+})(VendorForm)
 
 export default connect(
     null,
     mapDispatchToProps
-)(RegisterForm);
+)(VendorForm);

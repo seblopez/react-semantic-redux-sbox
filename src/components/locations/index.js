@@ -4,6 +4,7 @@ import {Field} from "redux-form";
 
 import AddRemoveButtons from "../tables/AddRemoveButtons";
 import {
+    CITY_CHANGED,
     CLOSE_DELETE_MODAL,
     MOVE_TO_LOCATIONS_PAGE,
     OPEN_DELETE_MODAL
@@ -20,64 +21,69 @@ const cities = [
         key: '2324342213as23e',
         text: 'Buenos Aires',
         value: '2324342213as23e',
-        state: '343qwd34wsd343'
+        state: '345343243s3dlk',
+        country: '343qwd34wsd343'
     },
     {
         key: '2324342213uid3e',
         text: 'Banfield',
         value: '2324342213uid3e',
-        state: '343qwd34wsd12w'
+        state: '343qwd34wsd12w',
+        country: '343qwd34wsd343'
     },
     {
         key: '232434221e323e',
         text: 'Quilmes',
         value: '232434221e323e',
-        state: '343qwd34wsd12w'
+        state: '343qwd34wsd12w',
+        country: '343qwd34wsd343'
     },
     {
         key: '232434221ss23e',
         text: 'Pleasanton',
         value: '232434221ss23e',
-        state: '343qwd34wsd343'
+        state: '343qwd34wsd345',
+        country: '343qwd34wsd342'
     },
     {
         key: '2324342213ac24e',
         text: 'Berkeley',
         value: '2324342213ac24e',
-        state: '343qwd34wsd343'
+        state: '343qwd34wsd345',
+        country: '343qwd34wsd342'
     }
 ];
 
 const states = [
     {
-        key: '345343243s3dsa',
+        key: '343qwd34wsd345',
         text: 'California',
         value: '345343243s3dsa',
-        country: '343qwd34wsd343'
+        country: '343qwd34wsd342'
     },
     {
         key: '345343243s3d2a',
         text: 'Nebraska',
         value: '345343243s3d2a',
-        country: '343qwd34wsd343'
+        country: '343qwd34wsd342'
     },
     {
         key: '345343243s3dsd',
         text: 'Washington',
         value: '345343243s3dsd',
-        country: '343qwd34wsd343'
+        country: '343qwd34wsd342'
     },
     {
         key: '345343243s3dfg',
         text: 'Delaware',
         value: '345343243s3dfg',
-        country: '343qwd34wsd343'
+        country: '343qwd34wsd342'
     },
     {
-        key: '345343243s3d3d',
+        key: '343qwd34wsd12w',
         text: 'Buenos Aires',
-        value: '345343243s3d3d',
-        country: '343qwd34wsd12w'
+        value: '343qwd34wsd12w',
+        country: '343qwd34wsd343'
     },
     {
         key: '345343243s3dlk',
@@ -109,7 +115,7 @@ const countries = [
 
 ];
 
-const renderCity = ({input, name, key, meta, placeholder, required, options}) => {
+const renderCity = ({input, name, key, meta, placeholder, required, options, dispatcher, index}) => {
     return(
         <Form.Dropdown
             key={key}
@@ -120,13 +126,17 @@ const renderCity = ({input, name, key, meta, placeholder, required, options}) =>
             options={options}
             value={input.value}
             required={required}
-            onChange={(e, {value}) => input.onChange(value)}
+            onChange={(e, data) => {
+                const option = options.find(option => option.key === data.value);
+                dispatcher({type: CITY_CHANGED, cityState: option.state, cityIndex: index, cityCountry: option.country })
+                input.onChange(data.value);
+            }}
             error={errorRenderer(meta, required)}
         />
     )
 };
 
-const renderState = ({input, name, key, meta, placeholder, required, options}) => {
+const renderState = ({input, name, key, meta, placeholder, required, options, index, cityState, cityIndex}) => {
     return(
         <Form.Dropdown
             key={key}
@@ -134,7 +144,7 @@ const renderState = ({input, name, key, meta, placeholder, required, options}) =
             placeholder={placeholder}
             search
             selection
-            options={options}
+            options={options.filter(option => index === cityIndex ? option.key === cityState : true)}
             value={input.value}
             required={required}
             onChange={(e, {value}) => input.onChange(value)}
@@ -143,7 +153,7 @@ const renderState = ({input, name, key, meta, placeholder, required, options}) =
     )
 };
 
-const renderCountry = ({input, name, key, meta, placeholder, required, options}) => {
+const renderCountry = ({input, name, key, meta, placeholder, required, options, index, cityIndex, cityCountry}) => {
     return(
         <Form.Dropdown
             key={key}
@@ -151,7 +161,7 @@ const renderCountry = ({input, name, key, meta, placeholder, required, options})
             placeholder={placeholder}
             search
             selection
-            options={options}
+            options={options.filter(option => index === cityIndex ? option.key === cityCountry : true )}
             value={input.value}
             required={required}
             onChange={(e, {value}) => input.onChange(value)}
@@ -160,17 +170,12 @@ const renderCountry = ({input, name, key, meta, placeholder, required, options})
     )
 };
 
-const LocationRows = ({fields, dispatch, page, pageSize}) => {
+const LocationRows = ({fields, dispatch, page, pageSize, cityState, cityIndex, cityCountry}) => {
     const {firstIndex, lastIndex} = calculatePageRowIndexes(fields, page, pageSize);
-    console.log('First index ', firstIndex);
-    console.log('Last index ', lastIndex);
-
     return fields
             .map(location => location)
             .slice(firstIndex, lastIndex)
             .map((location, index) => {
-                console.log('Index ', index)
-                console.log('Location ', location);
                 return(
                     <Table.Row key={index}>
                         <Table.Cell collapsing textAlign='center'>
@@ -200,12 +205,14 @@ const LocationRows = ({fields, dispatch, page, pageSize}) => {
                         </Table.Cell>
                         <Table.Cell>
                             <Field
-                                key={`${location}.role`}
-                                name={`${location}.role`}
+                                key={`${location}.city`}
+                                name={`${location}.city`}
                                 component={renderCity}
                                 required={true}
                                 options={cities}
                                 placeholder='Select a city...'
+                                index={firstIndex + index}
+                                dispatcher={dispatch}
                             />
                         </Table.Cell>
                         <Table.Cell>
@@ -222,6 +229,9 @@ const LocationRows = ({fields, dispatch, page, pageSize}) => {
                                 name={`${location}.state`}
                                 component={renderState}
                                 options={states}
+                                index={firstIndex + index}
+                                cityState={cityState}
+                                cityIndex={cityIndex}
                                 placeholder='Select a state/province...'
                             />
                         </Table.Cell>
@@ -231,6 +241,9 @@ const LocationRows = ({fields, dispatch, page, pageSize}) => {
                                 name={`${location}.country`}
                                 component={renderCountry}
                                 options={countries}
+                                index={firstIndex + index}
+                                cityCountry={cityCountry}
+                                cityIndex={cityIndex}
                                 placeholder='Select a country...'
                             />
                         </Table.Cell>
@@ -317,7 +330,15 @@ export const locationsTab = ({fields, dispatchers}) => {
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                    <LocationRows fields={fields} dispatch={props.dispatch} page={props.locationsActivePage} pageSize={props.locationsPageSize}/>
+                    <LocationRows
+                        fields={fields}
+                        dispatch={props.dispatch}
+                        page={props.locationsActivePage}
+                        pageSize={props.locationsPageSize}
+                        cityState={props.cityState}
+                        cityIndex={props.cityIndex}
+                        cityCountry={props.cityCountry}
+                />
                 </Table.Body>
             </Table>
             <TablePagination dispatch={props.dispatch} entity={props.locations} pageSize={props.locationsPageSize} event={MOVE_TO_LOCATIONS_PAGE}/>

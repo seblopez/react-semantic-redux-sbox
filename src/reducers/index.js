@@ -4,8 +4,11 @@ import { reducer as formReducer } from 'redux-form';
 import deleteModalReducer from "./deleteModalReducer";
 import contactPaginationReducer from './contactPaginationReducer';
 import locationPaginationReducer from  './locationPaginationReducer';
+import cityChangeReducer from "./cityChangeReducer";
 
 export default combineReducers({ form: formReducer,
     deleteModal: deleteModalReducer,
     contactPagination: contactPaginationReducer,
-    locationPagination: locationPaginationReducer} );
+    locationPagination: locationPaginationReducer,
+    cityChanged: cityChangeReducer
+} );

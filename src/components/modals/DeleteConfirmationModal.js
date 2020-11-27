@@ -21,13 +21,13 @@ class DeleteConfirmationModal extends React.Component {
 
     renderContent() {
         const {dispatcher, entityName, deleteModal, messageFields} = this.props;
-        console.log('Delete modal ', deleteModal);
         const entityIndex = deleteModal.index;
 
         if(entityIndex >= 0) {
             const entityElement = dispatcher[entityName][entityIndex];
             const itemToRemove = messageFields
-                .map(messageField => entityElement[messageField.field] ? `${entityElement[messageField.field]}` : `${messageField.noValue}`).join(' ');
+                .map(messageField => entityElement[messageField.field] ? `${entityElement[messageField.field]}` : `${messageField.noValue}`)
+                .join(' ');
 
             return(`Are you sure you want to delete ${itemToRemove}?`);
         } else {
