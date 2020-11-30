@@ -3,7 +3,9 @@ import {
     MOVE_TO_LOCATIONS_PAGE,
     OPEN_DELETE_MODAL,
     CLOSE_DELETE_MODAL,
-    CITY_CHANGED
+    CITY_CHANGED,
+    HIDE_MENU,
+    SHOW_MENU
 } from "./types";
 
 export const openDeleteModal = () => {
@@ -33,5 +35,17 @@ export const moveToLocationsPage = () => {
 export const cityChanged = () => {
     return {
         type: CITY_CHANGED
+    };
+}
+
+export const hideMenu = () => {
+    return {
+        type: HIDE_MENU
+    };
+}
+
+export const showMenu = () => {
+    return {
+        type: SHOW_MENU
     };
 }

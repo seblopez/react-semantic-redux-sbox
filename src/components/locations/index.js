@@ -13,7 +13,7 @@ import TablePagination from "../tables/TablePagination";
 import {renderHeaderCheckBox, renderRowCheckBox} from "../MassChangeControls";
 import {errorRenderer} from "../errors";
 import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
-import {renderInput} from "../Input";
+import {renderHidden, renderInput} from "../Input";
 import {calculatePageRowIndexes} from "../tables/PageRangeCalculator";
 
 const cities = [
@@ -179,6 +179,11 @@ const LocationRows = ({fields, dispatch, page, pageSize, cityState, cityIndex, c
                 return(
                     <Table.Row key={index}>
                         <Table.Cell collapsing textAlign='center'>
+                            <Field
+                                key={`${location}.id`}
+                                name={`${location}.id`}
+                                component={renderHidden}
+                            />
                             <Field
                                 key={`${location}.selected`}
                                 component={renderRowCheckBox}

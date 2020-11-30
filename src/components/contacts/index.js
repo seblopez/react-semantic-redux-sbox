@@ -7,7 +7,7 @@ import {MOVE_TO_CONTACTS_PAGE, OPEN_DELETE_MODAL, CLOSE_DELETE_MODAL} from "../.
 import TablePagination from "../tables/TablePagination";
 import AddRemoveButtons from "../tables/AddRemoveButtons";
 import {renderHeaderCheckBox, renderRowCheckBox} from "../MassChangeControls";
-import {renderInput} from "../Input";
+import {renderHidden, renderInput} from "../Input";
 import {calculatePageRowIndexes} from "../tables/PageRangeCalculator";
 
 const roleOptions = [
@@ -43,6 +43,11 @@ const ContactRows = ({fields, dispatch, page, pageSize}) => {
             return(
                 <Table.Row key={index}>
                     <Table.Cell collapsing textAlign='center'>
+                        <Field
+                            key={`${contact}.id`}
+                            name={`${contact}.id`}
+                            component={renderHidden}
+                        />
                         <Field
                             key={`${contact}.selected`}
                             component={renderRowCheckBox}
