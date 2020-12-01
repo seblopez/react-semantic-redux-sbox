@@ -5,7 +5,9 @@ import {
     CLOSE_DELETE_MODAL,
     CITY_CHANGED,
     HIDE_MENU,
-    SHOW_MENU
+    SHOW_MENU,
+    SIGN_IN,
+    SIGN_OUT
 } from "./types";
 
 export const openDeleteModal = () => {
@@ -49,3 +51,17 @@ export const showMenu = () => {
         type: SHOW_MENU
     };
 }
+
+export const signIn = userId => {
+    return {
+        type: SIGN_IN,
+        payload: userId
+    }
+};
+
+export const signOut = () => {
+    return {
+        type: SIGN_OUT,
+        payload: null
+    }
+};

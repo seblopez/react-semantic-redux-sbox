@@ -6,11 +6,13 @@ import contactPaginationReducer from './contactPaginationReducer';
 import locationPaginationReducer from  './locationPaginationReducer';
 import cityChangeReducer from './cityChangeReducer';
 import menuReducer from './menuReducer';
+import authReducer from "./authReducer";
 
 export default combineReducers({ form: formReducer,
     deleteModal: deleteModalReducer,
     contactPagination: contactPaginationReducer,
     locationPagination: locationPaginationReducer,
     cityChanged: cityChangeReducer,
-    menuVisible: menuReducer
+    menuVisible: menuReducer,
+    auth: authReducer
 });

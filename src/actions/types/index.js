@@ -5,3 +5,5 @@ export const MOVE_TO_LOCATIONS_PAGE = 'MOVE_TO_LOCATIONS_PAGE';
 export const CITY_CHANGED = 'CITY_CHANGED';
 export const HIDE_MENU = 'HIDE_MENU';
 export const SHOW_MENU = 'SHOW_MENU';
+export const SIGN_IN = 'SIGN_IN';
+export const SIGN_OUT = 'SIGN_OUT';

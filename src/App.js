@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import VendorForm from "./components/VendorForm";
-import {Sidebar, Menu, Icon, Segment} from "semantic-ui-react";
+import {Sidebar, Menu, Grid, Header} from "semantic-ui-react";
 import {HIDE_MENU, SHOW_MENU} from "./actions/types";
+import GoogleAuth from "./components/auth/GoogleAuth";
 
 class VendorFormContainer extends Component {
     submit = values => {
@@ -10,12 +11,22 @@ class VendorFormContainer extends Component {
         console.log(JSON.stringify(values, null, 2));
     };
 
-    getInitialValues() {
+    renderUser() {
+        if(!this.props.userProfile) {
+            return(
+              <Header content='Please sign in' size='small' />
+            );
+        }
+        return(
+            <Header size='tiny'>
+                {`Welcome ${this.props.userProfile.sV}!`}
+            </Header>
+        );
     }
 
-    render() {
-        return (
-            <Sidebar.Pushable>
+    renderMenus() {
+        if(!this.props.userProfile) {
+            return(
                 <Sidebar
                     as={Menu}
                     animation='overlay'
@@ -25,41 +36,67 @@ class VendorFormContainer extends Component {
                     visible={this.props.menuVisible}
                     width='thin'
                 >
-                    <Menu.Item
-                        as='a'
-                        onClick={(e, data) => this.props.dispatch({type: HIDE_MENU})}
-                    >
-                        <Icon name='home'/>
-                        Home
-                    </Menu.Item>
-                    <Menu.Item
-                        as='a'
-                        onClick={(e, data) => this.props.dispatch({type: HIDE_MENU})}
-                    >
-                        <Icon name='address book outline'/>
-                        Vendors
-                    </Menu.Item>
-                    <Menu.Item
-                        as='a'
-                        onClick={(e, data) => this.props.dispatch({type: HIDE_MENU})}
-                    >
-                        <Icon name='sign out'/>
-                        Sign out
-                    </Menu.Item>
-                </Sidebar>
+                    <GoogleAuth />
+                </Sidebar>);
+            }
+
+        return(
+            <Sidebar
+                as={Menu}
+                animation='overlay'
+                inverted
+                vertical
+                onHide={() => this.props.dispatch({type: HIDE_MENU})}
+                visible={this.props.menuVisible}
+                width='thin'
+            >
+                <Menu.Item
+                    as='a'
+                    onClick={() => this.props.dispatch({type: HIDE_MENU})}
+                    icon='home'
+                    content='Home'
+                />
+                <Menu.Item
+                as='a'
+                onClick={() => this.props.dispatch({type: HIDE_MENU})}
+                icon='address book outline'
+                content='Vendors'
+                />
+                <GoogleAuth />
+            </Sidebar>
+    );
+    }
+
+    getInitialValues() {
+    }
+
+    render() {
+        return (
+            <Sidebar.Pushable>
+                {this.renderMenus()}
                 <Sidebar.Pusher>
-                    <Menu
-                        size='large'
-                        inverted
-                        compact
-                        onClick={(e, data) => this.props.dispatch({type: SHOW_MENU})}
-                        className='no-border-radius'
-                    >
-                        <Menu.Item
-                            as='a'
-                            icon='bars'
-                        />
-                    </Menu>
+                    <Grid columns={2}>
+                        <Grid.Column width={14}>
+                            <Menu
+                                size='small'
+                                inverted
+                                compact
+                                onClick={() => this.props.dispatch({type: SHOW_MENU})}
+                                className='no-border-radius'
+                            >
+                                <Menu.Item
+                                    as='a'
+                                    icon='bars'
+                                />
+                            </Menu>
+                        </Grid.Column>
+                        <Grid.Column
+                            width={2}
+                            textAlign='left'
+                            verticalAlign='middle'>
+                            {this.renderUser()}
+                        </Grid.Column>
+                    </Grid>
                     <VendorForm
                         onSubmit={this.submit}
                         initialValues={this.getInitialValues()}
@@ -71,9 +108,9 @@ class VendorFormContainer extends Component {
 }
 
 VendorFormContainer = connect(state => {
-        const menuVisible = state.menuVisible.menuVisible;
-        return { menuVisible };
-    }
-)(VendorFormContainer);
+    const menuVisible = state.menuVisible.menuVisible;
+    const userProfile = state.auth.userProfile;
+    return { menuVisible, userProfile };
+})(VendorFormContainer);
 
 export default VendorFormContainer;
