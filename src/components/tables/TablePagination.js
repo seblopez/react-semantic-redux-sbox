@@ -1,5 +1,6 @@
 import {Grid, Pagination} from "semantic-ui-react";
 import React from "react";
+import {moveToPage} from "../../actions";
 
 const TablePagination = ({dispatch, entity, pageSize, event}) => {
     if(!entity) return null;
@@ -13,7 +14,7 @@ const TablePagination = ({dispatch, entity, pageSize, event}) => {
                     <Pagination
                         floated='right'
                         totalPages={totalPages}
-                        onPageChange={(e, data) => dispatch({ type: event, page: data.activePage, pageSize: pageSize, totalPages: totalPages})}
+                        onPageChange={(e, data) => dispatch(moveToPage({ type: event, page: data.activePage, pageSize: pageSize, totalPages: totalPages}))}
                     />
                 </Grid.Column>
             </Grid>

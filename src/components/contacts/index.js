@@ -3,12 +3,13 @@ import {Form, Button, Table, Message} from "semantic-ui-react";
 import { Field } from "redux-form";
 import { errorRenderer } from "../errors";
 import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
-import {MOVE_TO_CONTACTS_PAGE, OPEN_DELETE_MODAL, CLOSE_DELETE_MODAL} from "../../actions/types";
+import {MOVE_TO_CONTACTS_PAGE} from "../../actions/types";
 import TablePagination from "../tables/TablePagination";
 import AddRemoveButtons from "../tables/AddRemoveButtons";
 import {renderHeaderCheckBox, renderRowCheckBox} from "../MassChangeControls";
 import {renderHidden, renderInput} from "../Input";
 import {calculatePageRowIndexes} from "../tables/PageRangeCalculator";
+import {closeDeleteModal, openDeleteModal} from "../../actions";
 
 const roleOptions = [
     { key: 'ow', value: 'ow', text: 'Owner' },
@@ -114,7 +115,7 @@ const ContactRows = ({fields, dispatch, page, pageSize}) => {
                                 name='delete'
                                 onClick={e => {
                                     e.preventDefault();
-                                    dispatch({type: OPEN_DELETE_MODAL, dimmer: 'blurring', index: firstIndex + index });
+                                    dispatch(openDeleteModal(firstIndex + index));
                                 } } >
                         </Button>
                     </Table.Cell>
@@ -145,7 +146,7 @@ export const contactsTab = ({ fields, dispatchers }) => {
                 <AddRemoveButtons
                     dispatcher={props}
                     entityName='contacts'
-                    action={{type: OPEN_DELETE_MODAL, dimmer:'blurring'}}
+                    action={openDeleteModal()}
                     addButtonIcon='add'
                     deleteButtonIcon='delete'
                 />
@@ -159,7 +160,7 @@ export const contactsTab = ({ fields, dispatchers }) => {
                 dispatcher={props}
                 entity={props.contacts}
                 entityName='contacts'
-                action={{type: OPEN_DELETE_MODAL, dimmer:'blurring'}}
+                action={openDeleteModal()}
                 addButtonIcon='add'
                 deleteButtonIcon='delete'
             />
@@ -167,9 +168,9 @@ export const contactsTab = ({ fields, dispatchers }) => {
                 dispatcher={props}
                 entityName='contacts'
                 messageFields={messageFields}
-                action={{type: CLOSE_DELETE_MODAL}}
+                action={closeDeleteModal()}
             />
-            <Table celled stackable striped>
+            <Table sortable celled striped>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell collapsing textAlign='center'>
@@ -180,7 +181,9 @@ export const contactsTab = ({ fields, dispatchers }) => {
                                 dispatcher={props}
                             />
                         </Table.HeaderCell>
-                        <Table.HeaderCell content='First Name' />
+                        <Table.HeaderCell
+                            content='First Name'
+                        />
                         <Table.HeaderCell content='Last Name' />
                         <Table.HeaderCell content='Role' />
                         <Table.HeaderCell content='eMail' />

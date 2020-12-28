@@ -1,119 +1,17 @@
 import React from "react";
-import {Message, Table, Button, Form} from "semantic-ui-react";
+import {Button, Form, Message, Table} from "semantic-ui-react";
 import {Field} from "redux-form";
 
 import AddRemoveButtons from "../tables/AddRemoveButtons";
-import {
-    CITY_CHANGED,
-    CLOSE_DELETE_MODAL,
-    MOVE_TO_LOCATIONS_PAGE,
-    OPEN_DELETE_MODAL
-} from "../../actions/types";
+import {MOVE_TO_LOCATIONS_PAGE} from "../../actions/types";
 import TablePagination from "../tables/TablePagination";
 import {renderHeaderCheckBox, renderRowCheckBox} from "../MassChangeControls";
 import {errorRenderer} from "../errors";
 import DeleteConfirmationModal from "../modals/DeleteConfirmationModal";
 import {renderHidden, renderInput} from "../Input";
 import {calculatePageRowIndexes} from "../tables/PageRangeCalculator";
-
-const cities = [
-    {
-        key: '2324342213as23e',
-        text: 'Buenos Aires',
-        value: '2324342213as23e',
-        state: '345343243s3dlk',
-        country: '343qwd34wsd343'
-    },
-    {
-        key: '2324342213uid3e',
-        text: 'Banfield',
-        value: '2324342213uid3e',
-        state: '343qwd34wsd12w',
-        country: '343qwd34wsd343'
-    },
-    {
-        key: '232434221e323e',
-        text: 'Quilmes',
-        value: '232434221e323e',
-        state: '343qwd34wsd12w',
-        country: '343qwd34wsd343'
-    },
-    {
-        key: '232434221ss23e',
-        text: 'Pleasanton',
-        value: '232434221ss23e',
-        state: '343qwd34wsd345',
-        country: '343qwd34wsd342'
-    },
-    {
-        key: '2324342213ac24e',
-        text: 'Berkeley',
-        value: '2324342213ac24e',
-        state: '343qwd34wsd345',
-        country: '343qwd34wsd342'
-    }
-];
-
-const states = [
-    {
-        key: '343qwd34wsd345',
-        text: 'California',
-        value: '345343243s3dsa',
-        country: '343qwd34wsd342'
-    },
-    {
-        key: '345343243s3d2a',
-        text: 'Nebraska',
-        value: '345343243s3d2a',
-        country: '343qwd34wsd342'
-    },
-    {
-        key: '345343243s3dsd',
-        text: 'Washington',
-        value: '345343243s3dsd',
-        country: '343qwd34wsd342'
-    },
-    {
-        key: '345343243s3dfg',
-        text: 'Delaware',
-        value: '345343243s3dfg',
-        country: '343qwd34wsd342'
-    },
-    {
-        key: '343qwd34wsd12w',
-        text: 'Buenos Aires',
-        value: '343qwd34wsd12w',
-        country: '343qwd34wsd343'
-    },
-    {
-        key: '345343243s3dlk',
-        text: 'Ciudad Autónoma de Buenos Aires',
-        value: '345343243s3dlk',
-        country: '343qwd34wsd343'
-    },
-    {
-        key: '345343243s3d90',
-        text: 'Santa Fe',
-        value: '345343243s3d90',
-        country: '343qwd34wsd343'
-    }
-];
-
-const countries = [
-    {
-        key: '343qwd34wsd343',
-        text: 'Argentina',
-        value: '343qwd34wsd343',
-        flag: 'ar'
-    },
-    {
-        key: '343qwd34wsd342',
-        text: 'USA',
-        value: '343qwd34wsd342',
-        flag: 'us'
-    }
-
-];
+import {cityChanged, closeDeleteModal, openDeleteModal} from "../../actions";
+import {cities, countries, states} from "../../data";
 
 const renderCity = ({input, name, key, meta, placeholder, required, options, dispatcher, index}) => {
     return(
@@ -128,7 +26,7 @@ const renderCity = ({input, name, key, meta, placeholder, required, options, dis
             required={required}
             onChange={(e, data) => {
                 const option = options.find(option => option.key === data.value);
-                dispatcher({type: CITY_CHANGED, cityState: option.state, cityIndex: index, cityCountry: option.country })
+                dispatcher(cityChanged({cityState: option.state, cityIndex: index, cityCountry: option.country }));
                 input.onChange(data.value);
             }}
             error={errorRenderer(meta, required)}
@@ -260,7 +158,7 @@ const LocationRows = ({fields, dispatch, page, pageSize, cityState, cityIndex, c
                                     name='delete'
                                     onClick={e => {
                                         e.preventDefault();
-                                        dispatch({type: OPEN_DELETE_MODAL, dimmer: 'blurring', index: firstIndex + index });
+                                        dispatch(openDeleteModal(firstIndex + index ));
                                     } } >
                             </Button>
                         </Table.Cell>
@@ -272,7 +170,7 @@ export const locationsTab = ({fields, dispatchers}) => {
     const props = dispatchers.props;
 
     const messageFields = [
-        { field: 'name', noValue: '(no First Name)'}
+        { field: 'name', noValue: '(no Denomination)'}
     ]
 
 
@@ -291,7 +189,7 @@ export const locationsTab = ({fields, dispatchers}) => {
                     dispatcher={props}
                     entity={props.locations}
                     entityName='locations'
-                    action={{type: OPEN_DELETE_MODAL, dimmer:'blurring'}}
+                    action={openDeleteModal()}
                     addButtonIcon='add'
                     deleteButtonIcon='delete'
                 />
@@ -305,7 +203,7 @@ export const locationsTab = ({fields, dispatchers}) => {
                 dispatcher={props}
                 entity={props.locations}
                 entityName='locations'
-                action={{type: OPEN_DELETE_MODAL, dimmer:'blurring'}}
+                action={openDeleteModal()}
                 addButtonIcon='add'
                 deleteButtonIcon='delete'
             />
@@ -313,7 +211,7 @@ export const locationsTab = ({fields, dispatchers}) => {
                 dispatcher={props}
                 entityName='locations'
                 messageFields={messageFields}
-                action={{type: CLOSE_DELETE_MODAL}}/>
+                action={closeDeleteModal()}/>
             <Table celled stackable striped>
                 <Table.Header>
                     <Table.Row>

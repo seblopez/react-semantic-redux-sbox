@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 
 import { signIn, signOut } from "../../actions";
 import {Menu} from "semantic-ui-react";
+import clientId from "../../config/config";
 
 class GoogleAuth extends React.Component {
     onSignInClick = () => {
@@ -14,7 +15,6 @@ class GoogleAuth extends React.Component {
     }
 
     renderAuthMenuItem() {
-        console.log('Is signed in? ', this.props.isSignedIn);
         if(this.props.isSignedIn === null) {
             return null;
         } else if(this.props.isSignedIn) {
@@ -42,7 +42,7 @@ class GoogleAuth extends React.Component {
         window.gapi.load('client:auth2',
             () => {
                 window.gapi.client.init({
-                    clientId: '697620197651-33kinna930udr0keo53f2kbnafe70089.apps.googleusercontent.com',
+                    clientId: clientId,
                     scope: 'email'
                 }).then(() => {
                     this.auth = window.gapi.auth2.getAuthInstance();
@@ -54,7 +54,6 @@ class GoogleAuth extends React.Component {
 
     onAuthChange = isSignedIn => {
         if(isSignedIn) {
-            console.log('Auth ', this.auth);
             this.props.signIn(this.auth.currentUser.get().getBasicProfile());
         } else {
             this.props.signOut()
