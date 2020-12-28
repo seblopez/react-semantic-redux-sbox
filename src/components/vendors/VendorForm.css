@@ -1,5 +1,5 @@
 /* Cosmetic form styles */
-body,
+body
 /* Restrict the form's max-width for the sake of responsiveness; center the content */
 form {
     max-width: 320px;
