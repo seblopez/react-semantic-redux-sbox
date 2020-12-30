@@ -8,7 +8,7 @@ import {
     SHOW_MENU,
     SIGN_IN,
     SIGN_OUT,
-    CHANGE_SORT, FETCH_VENDOR, EDIT_VENDOR, CREATE_VENDOR
+    CHANGE_SORT, FETCH_VENDOR, EDIT_VENDOR, CREATE_VENDOR, FETCH_VENDORS
 } from "./types";
 import {vendorList} from "../data";
 import {vendorTransformer} from "../transformers";
@@ -76,6 +76,11 @@ export const fetchVendor = id => {
     const response = vendorList.find(vendor => vendor.id === id);
     return {type: FETCH_VENDOR, payload: response};
 }
+
+export const fetchVendors = () => {
+    const response = vendorList;
+    return {type: FETCH_VENDORS, payload: response}
+};
 
 export const editVendor = (id, formValues) => {
     const submitValues = vendorTransformer(formValues);

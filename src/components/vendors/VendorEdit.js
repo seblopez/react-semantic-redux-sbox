@@ -15,7 +15,7 @@ class VendorEdit extends Component {
             <div>
                 <VendorForm
                     title='Edit Vendor'
-                    initialValues={this.props.vendor.payload}
+                    initialValues={this.props.vendors.payload}
                     onSubmit={this.onSubmit}/>
             </div>
         );
@@ -24,7 +24,7 @@ class VendorEdit extends Component {
 }
 
 const mapStateToProps = state => {
-    return { vendor: state.vendor };
+    return { vendors: state.vendors };
 }
 
 export default connect(mapStateToProps, { fetchVendor, editVendor })(VendorEdit);

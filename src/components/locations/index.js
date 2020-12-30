@@ -211,7 +211,7 @@ export const locationsTab = ({fields, dispatchers}) => {
                 dispatcher={props}
                 entityName='locations'
                 messageFields={messageFields}
-                action={closeDeleteModal()}/>
+                modalAction={closeDeleteModal()}/>
             <Table celled stackable striped>
                 <Table.Header>
                     <Table.Row>

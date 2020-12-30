@@ -1,18 +1,23 @@
-import React from "react";
+import { Component } from "react";
 import {Button, Modal, Header, List, Icon} from "semantic-ui-react";
 import { connect } from "react-redux";
 
-class DeleteConfirmationModal extends React.Component {
+class DeleteConfirmationModal extends Component {
 
     handleDeleteClick() {
-        const {dispatcher, entityName, action, deleteModal} = this.props;
+        const {dispatcher, entityName, modalAction, deleteModal} = this.props;
 
-        if(deleteModal.index >= 0) {
-            dispatcher.updateRows(dispatcher.form, entityName, dispatcher[entityName].filter((_, i) => i !== this.props.deleteModal.index));
+        if(dispatcher.form) {
+            if(deleteModal.index >= 0) {
+                dispatcher.updateRows(dispatcher.form, entityName, dispatcher[entityName].filter((_, i) => i !== this.props.deleteModal.index));
+            } else {
+                dispatcher.updateRows(dispatcher.form, entityName, dispatcher[entityName].filter(row => !row.selected));
+            }
         } else {
-            dispatcher.updateRows(dispatcher.form, entityName, dispatcher[entityName].filter(row => !row.selected));
+            dispatcher[entityName].filter((_, i) => i !== this.props.deleteModal.index);
         }
-        dispatcher.dispatch(action);
+        dispatcher.dispatch(modalAction);
+
     }
 
     handleCancelClick() {

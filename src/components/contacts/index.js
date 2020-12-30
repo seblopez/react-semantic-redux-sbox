@@ -168,7 +168,7 @@ export const contactsTab = ({ fields, dispatchers }) => {
                 dispatcher={props}
                 entityName='contacts'
                 messageFields={messageFields}
-                action={closeDeleteModal()}
+                modalAction={closeDeleteModal()}
             />
             <Table sortable celled striped>
                 <Table.Header>

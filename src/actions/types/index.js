@@ -12,3 +12,5 @@ export const CHANGE_SORT = 'CHANGE_SORT';
 export const CREATE_VENDOR = 'CREATE_VENDOR';
 export const EDIT_VENDOR = 'EDIT_VENDOR';
 export const FETCH_VENDOR = 'FETCH_VENDOR';
+export const FETCH_VENDORS = 'FETCH_VENDORS';
+export const DELETE_VENDOR = 'DELETE_VENDOR';

@@ -12,7 +12,7 @@ import vendorListPaginationReducer from "./vendorListPaginationReducer";
 import vendorReducer from "./vendorReducer";
 
 export default combineReducers({ form: formReducer,
-    vendor: vendorReducer,
+    vendors: vendorReducer,
     deleteModal: deleteModalReducer,
     contactPagination: contactPaginationReducer,
     locationPagination: locationPaginationReducer,
